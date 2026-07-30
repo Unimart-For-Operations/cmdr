@@ -1,0 +1,29 @@
+# Nix
+result
+result-*
+.direnv/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+
+# Secrets - NEVER commit these!
+# The secrets/ directory in the repo root contains SOPS-encrypted secrets
+# and should be committed. Only raw/external secret files are excluded.
+
+# Age keys - private keys should never be in git
+*.age
+**/age-keys/

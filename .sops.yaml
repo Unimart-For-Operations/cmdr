@@ -1,0 +1,21 @@
+# sops-nix configuration
+# This file defines which age keys can decrypt which secrets
+
+keys:
+  # macOS hosts
+  - &apple-macbook-m3-pro age1d4ekrafmwzytdt8r5yhrrz44wyyyezp6nlsjw8delu60rt5n7qkqyg55cr
+  - &apple-studio-m2-max age16r7rndasv8m4snzjeg4uh8mdc3xqqlc35l9sjcv5pjy8v752vfqq4axd32
+  
+  # Linux hosts
+  - &cachyos age1vudtp8c2wlyu5tufvvtuayw756lwleu4ln6yft78haarkt8vxywqha8gln
+  - &cmdr age1le548y8ehg8k83pl9tk4xejjxrsmgd99jfl9l004asphf9tcyvsqa04yrt
+
+creation_rules:
+  # Universal secrets - accessible to all hosts
+  - path_regex: secrets/universal/.*\.yaml$
+    key_groups:
+      - age:
+          - *apple-macbook-m3-pro
+          - *apple-studio-m2-max
+          - *cachyos
+          - *cmdr

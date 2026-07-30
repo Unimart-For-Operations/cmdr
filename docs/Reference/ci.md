@@ -1,0 +1,146 @@
+---
+source: idpbuilder-org
+synced: 2026-03-30
+---
+# CI Strategy
+
+Local-first continuous integration. No remote CI services — all checks run on your machine.
+
+## Overview
+
+Validation happens at two levels:
+
+1. **Pre-commit hook** — runs automatically on every `git commit`
+2. **`make ci`** — full suite, run manually before pushing
+
+Both are designed to gracefully degrade: if a tool is missing (e.g., outside the dev shell), that check is skipped rather than failing.
+
+## Pre-commit Hook
+
+Deployed globally via `unimart deli switch` (Nix-managed, installed to `~/.githooks/`). Runs these checks in order:
+
+| Check | Tool | What it validates |
+|-------|------|-------------------|
+| Nix formatting | `nix fmt` | All `.nix` files are formatted (if `flake.nix` exists) |
+| Go formatting | `go fmt` | All `.go` files are formatted (if `go.mod` exists) |
+| Go vet | `go vet` | Static analysis of Go code (if `go.mod` exists) |
+| Secret scanning | `gitleaks` | No secrets in staged changes |
+| Theme lint | cmdr-specific | Theme consistency (if cmdr theme script exists) |
+
+If any check fails, the commit is aborted. If a tool isn't available, that check is skipped with a warning.
+
+### Deployment
+
+Hooks are deployed automatically when applying the Nix configuration:
+
+```bash
+unimart deli switch
+```
+
+There is no `make hooks` target — hooks are Nix-managed and deployed globally to `~/.githooks/` via `core.hooksPath`. See meta's ADR-005 for the full gate architecture.
+
+### Additional Hook Types
+
+Beyond pre-commit, the hook system includes:
+
+- **commit-msg** — Validates conventional commit format, DCO sign-off, `## Changes` and `## Executive Summary` sections
+- **post-commit** — Syncs docs to cdc vault, creates commit-log entries, auto-commits the vault
+- **pre-push** — Runs `go build`, `go test`, and `nix flake check`
+
+### Bypassing
+
+In rare cases where you need to commit despite a failing check:
+
+```bash
+git commit --no-verify -m "wip: work in progress"
+```
+
+## `make ci`
+
+The full local CI suite. Run this before pushing to main:
+
+```bash
+make ci
+```
+
+Runs four checks in sequence:
+
+| Step | Check | Equivalent CI job |
+|------|-------|-------------------|
+| 1/4 | Secret scanning (`gitleaks detect`) | — |
+| 2/4 | Nix formatting (`nix fmt -- --check .`) | — |
+| 3/4 | Flake evaluation (`nix flake check`) | `nix-flake-check.yml` |
+| 4/4 | Environment health (`make doctor`) | `verify-*` jobs |
+
+Reports a pass/fail summary at the end.
+
+## What Each Check Does
+
+### Secret Scanning
+
+Uses [gitleaks](https://github.com/gitleaks/gitleaks) with the repo's `.gitleaks.toml` config. The config allowlists SOPS-encrypted content patterns (`ENC[AES256_GCM,...]`, age public keys) so encrypted secrets don't trigger false positives.
+
+- **Pre-commit**: scans staged changes only (`gitleaks git --staged`)
+- **`make ci`**: scans the full repo (`gitleaks detect`)
+
+### Nix Formatting
+
+Runs `nixpkgs-fmt` (the formatter defined in `flake.nix`) in check mode. If files are unformatted, fix with:
+
+```bash
+make fmt
+```
+
+### Flake Evaluation
+
+Runs `nix flake check`, which evaluates all outputs defined in `flake.nix` — every `homeConfiguration`, every `darwinConfiguration`, the dev shell, and the formatter. This catches:
+
+- Syntax errors in any `.nix` file
+- Missing imports or undefined variables
+- Type errors in module options
+- Broken package references
+
+This replaces the former `nix-flake-check.yml` GitHub Actions workflow. Note that `nix flake check` validates all systems (Linux + macOS) regardless of which platform you're running on.
+
+### Environment Health (`make doctor`)
+
+Verifies that the current machine has all expected tools and configurations. Checks:
+
+- Prerequisites: git, Homebrew (macOS), Nix, flakes enabled
+- Repository: flake.nix, flake.lock, git submodules
+- Shell: default shell is zsh, XDG config directory
+- Managed tools: nvim, tmux, starship, direnv, rg, fd, bat, eza, zoxide, atuin
+- Home Manager: available, generation count
+
+## Migration History
+
+This project previously used GitHub Actions for CI:
+
+| Former workflow | Replacement |
+|----------------|-------------|
+| `nix-flake-check.yml` (Linux + macOS matrix) | Pre-commit hook + `make ci` step 3 |
+| `linux-container-test.yml` (5-job pipeline) | `make doctor` + `make test`/`make tty` (Linux) |
+
+The GitHub Actions workflows were removed to eliminate per-minute billing costs on a private repository. The macOS CI runner alone accounted for ~60% of the flake check cost due to GitHub's 10x billing multiplier for macOS minutes.
+
+The container integration test pipeline (`build` -> `provision` -> `verify-*`) is preserved as local Make targets (`make test`, `make tty`, `make test-tty`) for Linux machines.
+
+## Future: Gitea Actions
+
+When the project matures to self-hosted Gitea, the `make ci` target is the natural entry point for a Gitea Actions workflow. A minimal workflow would be:
+
+```yaml
+# .gitea/workflows/ci.yml (future)
+on: [push]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - run: make ci
+```
+
+---
+
+**Last Updated:** 2026-03-23

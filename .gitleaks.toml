@@ -1,0 +1,18 @@
+title = "gitleaks config for cmdr"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allowlist for known false positives"
+
+regexes = [
+  '''sops_version=''',
+  '''ENC\[AES256_GCM,''',
+  '''age1[a-z0-9]{58}''',
+]
+
+paths = [
+  '''.sops.yaml''',
+  '''secrets/.*\.yaml''',
+]

@@ -1,0 +1,206 @@
+#!/usr/bin/env bash
+# org-inspect - scan an "org" directory for repos, agent files, docs and manifests
+# Place this file in the repo's `bin/` and make executable: chmod +x bin/org-inspect
+set -euo pipefail
+
+ROOT='.'
+DEPTH=4
+PREVIEW=12
+JSON_MODE=false
+FOLLOW_GIT=false
+REPO_FILTER=''
+
+usage(){
+  cat <<EOF
+Usage: org-inspect [--json] [--follow-git] [--depth N] [--preview N] [--repo NAME] [PATH]
+Scans immediate subdirectories (or PATH) for manifests, docs and agent-like files.
+Options:
+  --json        Emit machine-readable JSON (uses bundled Python snippet)
+  --follow-git  Include git remote/branch/dirty status (read-only)
+  --depth N     Max search depth for agent/docs (default 4)
+  --preview N   Lines of README/agent preview (default 12)
+  --repo NAME   Only inspect subdir NAME (basename match)
+  -h, --help    Show this help
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --json) JSON_MODE=true; shift ;;
+    --follow-git) FOLLOW_GIT=true; shift ;;
+    --depth) DEPTH="$2"; shift 2 ;;
+    --preview) PREVIEW="$2"; shift 2 ;;
+    --repo) REPO_FILTER="$2"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    --) shift; break ;;
+    *)
+      ROOT="$1"
+      shift ;;
+  esac
+done
+
+if [[ ! -d "$ROOT" ]]; then
+  echo "Path not found: $ROOT" >&2
+  exit 2
+fi
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "python3 is required" >&2
+  exit 3
+fi
+
+# Export variables for the embedded Python script
+export ORG_INSPECT_ROOT="$(cd "$ROOT" && pwd)"
+export ORG_INSPECT_DEPTH="$DEPTH"
+export ORG_INSPECT_PREVIEW="$PREVIEW"
+export ORG_INSPECT_FOLLOW_GIT="$FOLLOW_GIT"
+export ORG_INSPECT_REPO_FILTER="$REPO_FILTER"
+export ORG_INSPECT_JSON_MODE="$JSON_MODE"
+
+python3 - <<'PY'
+import os,sys,json,subprocess,shutil
+
+ROOT=os.environ.get('ORG_INSPECT_ROOT','.')
+DEPTH=int(os.environ.get('ORG_INSPECT_DEPTH','4'))
+PREVIEW=int(os.environ.get('ORG_INSPECT_PREVIEW','12'))
+FOLLOW_GIT=os.environ.get('ORG_INSPECT_FOLLOW_GIT','False') in ('True','true','1')
+REPO_FILTER=os.environ.get('ORG_INSPECT_REPO_FILTER','')
+JSON_MODE=os.environ.get('ORG_INSPECT_JSON_MODE','False') in ('True','true','1')
+
+def detect_lang(d):
+    if os.path.exists(os.path.join(d,'package.json')): return 'node/npm'
+    if os.path.exists(os.path.join(d,'pyproject.toml')) or os.path.exists(os.path.join(d,'setup.py')) or os.path.exists(os.path.join(d,'requirements.txt')): return 'python'
+    if os.path.exists(os.path.join(d,'go.mod')): return 'go'
+    if os.path.exists(os.path.join(d,'Cargo.toml')): return 'rust'
+    if os.path.exists(os.path.join(d,'Gemfile')): return 'ruby'
+    return 'unknown'
+
+def find_with_depth(d, maxdepth, tests):
+    matches=[]
+    for root,dirs,files in os.walk(d):
+        rel = os.path.relpath(root,d)
+        if rel=='.': depth=0
+        else: depth = rel.count(os.sep)+1
+        if depth>maxdepth:
+            # prevent walking deeper
+            dirs[:] = []
+            continue
+        # files
+        for f in files:
+            full = os.path.join(root,f)
+            for test in tests:
+                if test(full,root,f):
+                    matches.append(os.path.relpath(full,d))
+                    break
+    return matches
+
+def agent_test(full,root,f):
+    if 'agent' in f.lower(): return True
+    lowroot = root.lower()
+    if '/.agents' in lowroot or '/agents' in lowroot or '/opencode/agents' in lowroot: return True
+    return False
+
+def docs_test(full,root,f):
+    if f.lower().endswith('.md'): return True
+    return False
+
+def preview_file(path, n):
+    try:
+        with open(path,'r',errors='replace') as fh:
+            lines = []
+            for i in range(n):
+                line = fh.readline()
+                if not line: break
+                lines.append(line.rstrip('\n'))
+            return '\n'.join(lines)
+    except Exception as e:
+        return ''
+
+def read_repos(root):
+    entries = []
+    with os.scandir(root) as it:
+        for e in it:
+            if e.is_dir() and not e.name.startswith('.'):
+                entries.append(os.path.join(root,e.name))
+    if not entries:
+        return [root]
+    return entries
+
+repos = read_repos(ROOT)
+if REPO_FILTER:
+    repos = [r for r in repos if os.path.basename(r)==REPO_FILTER]
+
+results = []
+for r in repos:
+    info = {'path': r, 'lang': detect_lang(r)}
+    agents = find_with_depth(r, DEPTH, [agent_test])
+    docs = find_with_depth(r, DEPTH, [docs_test])
+    info['agents'] = agents
+    info['docs'] = docs
+    # readme preview
+    readme = ''
+    for candidate in ('README.md','README.MD','readme.md'):
+        p = os.path.join(r,candidate)
+        if os.path.isfile(p):
+            readme = preview_file(p, PREVIEW)
+            break
+    info['readme_preview'] = readme
+    # first agent preview
+    agent_preview = ''
+    if agents:
+        a0 = os.path.join(r,agents[0])
+        if os.path.isfile(a0):
+            agent_preview = preview_file(a0, PREVIEW)
+    info['first_agent_preview'] = agent_preview
+    # optional git info
+    if FOLLOW_GIT and os.path.isdir(os.path.join(r,'.git')) and shutil.which('git'):
+        try:
+            remote = subprocess.run(['git','-C',r,'remote','get-url','origin'], capture_output=True, text=True, check=False).stdout.strip()
+            branch = subprocess.run(['git','-C',r,'rev-parse','--abbrev-ref','HEAD'], capture_output=True, text=True, check=False).stdout.strip()
+            dirty_out = subprocess.run(['git','-C',r,'status','--porcelain'], capture_output=True, text=True, check=False).stdout
+            dirty = bool(dirty_out.strip())
+            info['git'] = {'remote': remote, 'branch': branch, 'dirty': dirty}
+        except Exception:
+            info['git'] = {}
+    results.append(info)
+
+if JSON_MODE:
+    json.dump(results, sys.stdout, indent=2, ensure_ascii=False)
+    sys.exit(0)
+
+# human-friendly output
+for info in results:
+    print('-'*60)
+    print('Repo:', info['path'])
+    print('Primary:', info.get('lang','unknown'))
+    print()
+    print('Agents:')
+    if info['agents']:
+        for a in info['agents'][:50]:
+            print('  -', a)
+    else:
+        print('  (none found)')
+    print()
+    print('Docs:')
+    if info['docs']:
+        for d in info['docs'][:50]:
+            print('  -', d)
+    else:
+        print('  (none found)')
+    print()
+    print('Readme preview:')
+    if info['readme_preview']:
+        for l in info['readme_preview'].split('\n'):
+            print('  ', l)
+    else:
+        print('  (none)')
+    print()
+    print('First agent preview:')
+    if info['first_agent_preview']:
+        for l in info['first_agent_preview'].split('\n'):
+            print('    ', l)
+    else:
+        print('  (none)')
+    print()
+
+PY

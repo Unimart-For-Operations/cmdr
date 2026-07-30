@@ -1,0 +1,416 @@
+# yazi — terminal file manager with image preview support
+#
+# Appearance: yatline header/status bars, full-border, git indicators.
+# Colours sourced from _shared/theme palette for consistency.
+{ pkgs, hostMeta ? { }, ... }:
+
+let
+  theme =
+    (import ../../../_shared/theme).call
+      (if hostMeta != null then hostMeta.theme else "catppuccin-frappe");
+  p = theme.palette;
+in
+{
+  programs.yazi = {
+    enable = true;
+    enableZshIntegration = true;
+    shellWrapperName = "y";
+
+    # ── Plugins (from nixpkgs) ──────────────────────────────────────
+    plugins = {
+      full-border = pkgs.yaziPlugins.full-border;
+      git = pkgs.yaziPlugins.git;
+      yatline = pkgs.yaziPlugins.yatline;
+      yatline-catppuccin = pkgs.yaziPlugins.yatline-catppuccin;
+    };
+
+    # ── Plugin initialisation (init.lua) ────────────────────────────
+    # Load order: theme → yatline → full-border → git
+    initLua = ''
+      -- Catppuccin Frappe palette for yatline
+      local catppuccin = require("yatline-catppuccin"):setup("frappe")
+
+      -- Header + status bars
+      require("yatline"):setup({
+        theme = catppuccin,
+
+        section_separator = { open = "", close = "" },
+        part_separator    = { open = "", close = "" },
+        inverse_separator = { open = "", close = "" },
+
+        show_background = true,
+
+        header_line = {
+          left = {
+            section_a = {
+              { type = "line", name = "tabs", params = { "left" } },
+            },
+            section_b = {},
+            section_c = {},
+          },
+          right = {
+            section_a = {
+              { type = "string", name = "date", params = { "%A, %d %B %Y" } },
+            },
+            section_b = {
+              { type = "string", name = "date", params = { "%X" } },
+            },
+            section_c = {},
+          },
+        },
+
+        status_line = {
+          left = {
+            section_a = {
+              { type = "string", name = "tab_mode" },
+            },
+            section_b = {
+              { type = "string", name = "hovered_size" },
+            },
+            section_c = {
+              { type = "string", name = "hovered_path" },
+              { type = "coloreds", name = "count" },
+            },
+          },
+          right = {
+            section_a = {
+              { type = "string", name = "cursor_position" },
+            },
+            section_b = {
+              { type = "string", name = "cursor_percentage" },
+            },
+            section_c = {
+              { type = "string", name = "hovered_file_extension", params = { true } },
+              { type = "coloreds", name = "permissions" },
+            },
+          },
+        },
+      })
+
+      -- Bordered panes (load AFTER yatline)
+      require("full-border"):setup({
+        type = ui.Border.ROUNDED,
+      })
+
+      -- Git file-status indicators
+      require("git"):setup()
+    '';
+
+    # ── Layout & behaviour (yazi.toml) ──────────────────────────────
+    settings = {
+      mgr = {
+        ratio = [
+          1
+          4
+          3
+        ];
+        show_hidden = false;
+        show_symlink = true;
+        sort_by = "natural";
+        sort_dir_first = true;
+        sort_sensitive = false;
+        linemode = "size";
+        scrolloff = 5;
+      };
+      preview = {
+        tab_size = 2;
+        wrap = "no";
+      };
+      plugin = {
+        prepend_fetchers = [
+          {
+            group = "git";
+            run = "git";
+            url = "*";
+          }
+          {
+            group = "git";
+            run = "git";
+            url = "*/";
+          }
+        ];
+      };
+    };
+
+    # ── Theme (theme.toml) — colours from shared palette ────────────
+    theme = {
+      # ── File manager panes ──────────────────────────────────────
+      mgr = {
+        border_style = {
+          fg = "${p.surface1}";
+        };
+        border_symbol = "│";
+        count_copied = {
+          bg = "${p.green}";
+          fg = "${p.base}";
+        };
+        count_cut = {
+          bg = "${p.red}";
+          fg = "${p.base}";
+        };
+        count_selected = {
+          bg = "${p.mauve}";
+          fg = "${p.base}";
+        };
+        cwd = {
+          fg = "${p.blue}";
+        };
+        find_keyword = {
+          bold = true;
+          fg = "${p.yellow}";
+          italic = true;
+          underline = true;
+        };
+        find_position = {
+          bg = "reset";
+          fg = "${p.peach}";
+          italic = true;
+        };
+        marker_copied = {
+          bg = "${p.green}";
+          fg = "${p.green}";
+        };
+        marker_cut = {
+          bg = "${p.red}";
+          fg = "${p.red}";
+        };
+        marker_marked = {
+          bg = "${p.mauve}";
+          fg = "${p.mauve}";
+        };
+        marker_selected = {
+          bg = "${p.rosewater}";
+          fg = "${p.rosewater}";
+        };
+        symlink_target = {
+          fg = "${p.teal}";
+          italic = true;
+        };
+      };
+
+      # ── Pane activity indicators ────────────────────────────────
+      indicator = {
+        current = {
+          fg = "${p.blue}";
+        };
+        parent = {
+          fg = "${p.blue}";
+        };
+        preview = {
+          fg = "${p.blue}";
+        };
+      };
+
+      # ── Mode indicator ──────────────────────────────────────────
+      mode = {
+        normal_alt = {
+          bg = "${p.surface0}";
+          fg = "${p.blue}";
+        };
+        normal_main = {
+          bg = "${p.blue}";
+          bold = true;
+          fg = "${p.base}";
+        };
+        select_alt = {
+          bg = "${p.surface0}";
+          fg = "${p.mauve}";
+        };
+        select_main = {
+          bg = "${p.mauve}";
+          bold = true;
+          fg = "${p.base}";
+        };
+        unset_alt = {
+          bg = "${p.surface0}";
+          fg = "${p.red}";
+        };
+        unset_main = {
+          bg = "${p.red}";
+          bold = true;
+          fg = "${p.base}";
+        };
+      };
+
+      # ── Input dialogs ──────────────────────────────────────────
+      input = {
+        border = {
+          fg = "${p.blue}";
+        };
+        selected = {
+          reversed = true;
+        };
+        title = {
+          fg = "${p.blue}";
+        };
+      };
+
+      # ── Picker dialogs ─────────────────────────────────────────
+      pick = {
+        active = {
+          bold = true;
+          fg = "${p.mauve}";
+        };
+        border = {
+          fg = "${p.blue}";
+        };
+      };
+
+      # ── Confirm dialogs ────────────────────────────────────────
+      confirm = {
+        border = {
+          fg = "${p.blue}";
+        };
+        btn_no = {
+          bg = "${p.red}";
+          fg = "${p.base}";
+        };
+        btn_yes = {
+          bg = "${p.green}";
+          fg = "${p.base}";
+        };
+        title = {
+          fg = "${p.blue}";
+        };
+      };
+
+      # ── Task manager ───────────────────────────────────────────
+      tasks = {
+        border = {
+          fg = "${p.blue}";
+        };
+        hovered = {
+          fg = "${p.mauve}";
+          underline = true;
+        };
+        title = {
+          fg = "${p.blue}";
+        };
+      };
+
+      # ── Which-key helper ───────────────────────────────────────
+      which = {
+        cand = {
+          fg = "${p.teal}";
+        };
+        desc = {
+          fg = "${p.text}";
+        };
+        mask = {
+          bg = "${p.mantle}";
+        };
+        rest = {
+          fg = "${p.overlay1}";
+        };
+        separator = "  ";
+        separator_style = {
+          fg = "${p.surface2}";
+        };
+      };
+
+      # ── Help page ──────────────────────────────────────────────
+      help = {
+        desc = {
+          fg = "${p.text}";
+        };
+        footer = {
+          bg = "${p.surface0}";
+          fg = "${p.text}";
+        };
+        hovered = {
+          bold = true;
+          reversed = true;
+        };
+        on = {
+          fg = "${p.teal}";
+        };
+        run = {
+          fg = "${p.mauve}";
+        };
+      };
+
+      # ── Notifications ──────────────────────────────────────────
+      notify = {
+        title_error = {
+          fg = "${p.red}";
+        };
+        title_info = {
+          fg = "${p.blue}";
+        };
+        title_warn = {
+          fg = "${p.peach}";
+        };
+      };
+
+      # ── File type colours ──────────────────────────────────────
+      filetype = {
+        rules = [
+          # Media
+          {
+            fg = "${p.teal}";
+            mime = "image/*";
+          }
+          {
+            fg = "${p.yellow}";
+            mime = "video/*";
+          }
+          {
+            fg = "${p.peach}";
+            mime = "audio/*";
+          }
+          # Archives
+          {
+            fg = "${p.mauve}";
+            mime = "application/zip";
+          }
+          {
+            fg = "${p.mauve}";
+            mime = "application/gzip";
+          }
+          {
+            fg = "${p.mauve}";
+            mime = "application/x-tar";
+          }
+          {
+            fg = "${p.mauve}";
+            mime = "application/x-bzip2";
+          }
+          {
+            fg = "${p.mauve}";
+            mime = "application/x-7z-compressed";
+          }
+          {
+            fg = "${p.mauve}";
+            mime = "application/x-rar";
+          }
+          {
+            fg = "${p.mauve}";
+            mime = "application/x-xz";
+          }
+          # Documents
+          {
+            fg = "${p.red}";
+            mime = "application/pdf";
+          }
+          {
+            fg = "${p.yellow}";
+            mime = "application/json";
+          }
+          {
+            fg = "${p.yellow}";
+            mime = "application/xml";
+          }
+          # Fallback
+          {
+            fg = "${p.text}";
+            url = "*";
+          }
+        ];
+      };
+    };
+  };
+
+  # Keep `yy` as a stable shortcut while avoiding function/alias collisions in
+  # shells that already define `yy`.
+  programs.zsh.shellAliases.yy = "y";
+}
