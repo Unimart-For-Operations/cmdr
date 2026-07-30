@@ -23,8 +23,8 @@
 #   │   └── cachyos/
 #   │       ├── meta.nix
 #   │       └── default.nix
-#   ├── nixos/                   ← future
-#   └── ubuntu/                  ← future
+#   ├── nixos/
+#   └── ubuntu/
 #
 # The resulting attrset is keyed by host name (flat, no distro prefix):
 #
@@ -32,6 +32,7 @@
 #     "apple-studio-m2-max" = {
 #       system        = "aarch64-darwin";
 #       platform      = "darwin";        ← inferred from distro directory
+#       distro        = "macos";         ← source distro directory name
 #       username      = "cmdr";
 #       homeDirectory = "/Users/cmdr";
 #       modules       = [ base.nix  darwin.nix  cli.nix  tui.nix  ...  default.nix ];
@@ -42,6 +43,8 @@
 # flake.nix then splits hosts by platform:
 #   - Darwin hosts → lib.mapAttrs mkDarwinConfiguration darwinHosts
 #     → darwinConfigurations."<name>" (nix-darwin wrapping Home Manager)
+#   - Embedded NixOS hosts → lib.mapAttrs mkNixOSConfiguration nixosHosts
+#     → nixosConfigurations."<name>" (nixosSystem wrapping Home Manager)
 #   - Linux hosts  → lib.mapAttrs mkHomeConfiguration linuxHosts
 #     → homeConfigurations."<name>" (standalone Home Manager)
 #
@@ -142,8 +145,12 @@ let
 
   # ── Directory scanning helpers ─────────────────────────────────────────
   # List only subdirectories, excluding hidden and special entries.
-  subdirs = path:
-    lib.filterAttrs (name: type: type == "directory" && !lib.hasPrefix "_" name && !lib.hasPrefix "." name)
+  subdirs =
+    path:
+    lib.filterAttrs
+      (
+        name: type: type == "directory" && !lib.hasPrefix "_" name && !lib.hasPrefix "." name
+      )
       (builtins.readDir path);
 
   # True if a directory contains a meta.nix file (i.e., it's a host, not empty).
@@ -157,14 +164,13 @@ let
       distroNames = builtins.attrNames distroDirs;
 
       # For one distro, return a list of { name, distro, hostDir } attrsets
-      hostsInDistro = distro:
+      hostsInDistro =
+        distro:
         let
           distroPath = ./. + "/${distro}";
           hostDirs = subdirs distroPath;
           hostNames = builtins.attrNames hostDirs;
-          validHosts = builtins.filter
-            (name: isHostDir (distroPath + "/${name}"))
-            hostNames;
+          validHosts = builtins.filter (name: isHostDir (distroPath + "/${name}")) hostNames;
         in
         map
           (name: {
@@ -179,7 +185,12 @@ let
     allHosts;
 
   # ── Build a single host attrset ────────────────────────────────────────
-  mkHost = { name, distro, hostDir }:
+  mkHost =
+    { name
+    , distro
+    , hostDir
+    ,
+    }:
     let
       meta = import (hostDir + "/meta.nix");
       hostModule = hostDir + "/default.nix";
@@ -201,7 +212,8 @@ let
       # Resolve feature strings to module paths
       features = meta.features or [ ];
       featureMods = map
-        (f:
+        (
+          f:
           if builtins.hasAttr f featureModules then
             featureModules.${f}
           else
@@ -212,7 +224,8 @@ let
       # Resolve desktop strings to module paths
       desktop = meta.desktop or [ ];
       desktopMods = map
-        (d:
+        (
+          d:
           if builtins.hasAttr d desktopModules then
             desktopModules.${d}
           else
@@ -223,7 +236,8 @@ let
       # Resolve sandbox strings to module paths (opt-in per host)
       sandbox = meta.sandbox or [ ];
       sandboxMods = map
-        (s:
+        (
+          s:
           if builtins.hasAttr s sandboxModules then
             sandboxModules.${s}
           else
@@ -246,14 +260,21 @@ let
     in
     # Strip internal fields from the output attrset — these are directives
       # consumed by the engine, not fields Home Manager needs.
-    (builtins.removeAttrs meta [ "features" "desktop" "sandbox" ]) // {
-      inherit platform;
-      modules =
-        [ ../03-features/base.nix platformModule ]
-        ++ featureMods
-        ++ desktopMods
-        ++ sandboxMods
-        ++ hostMods;
+    (builtins.removeAttrs meta [
+      "features"
+      "desktop"
+      "sandbox"
+    ])
+    // {
+      inherit distro platform;
+      modules = [
+        ../03-features/base.nix
+        platformModule
+      ]
+      ++ featureMods
+      ++ desktopMods
+      ++ sandboxMods
+      ++ hostMods;
     };
 
   # ── Assemble the final attrset ─────────────────────────────────────────
@@ -262,11 +283,12 @@ let
   # Convert list of { name, distro, hostDir } into { name = mkHost {...}; }
   # Detect duplicate host names across distros.
   hostsAttrset = builtins.foldl'
-    (acc: entry:
-      if builtins.hasAttr entry.name acc then
-        throw "Duplicate host name '${entry.name}' found in multiple distro directories"
-      else
-        acc // { ${entry.name} = mkHost entry; }
+    (
+      acc: entry:
+        if builtins.hasAttr entry.name acc then
+          throw "Duplicate host name '${entry.name}' found in multiple distro directories"
+        else
+          acc // { ${entry.name} = mkHost entry; }
     )
     { }
     hostList;
