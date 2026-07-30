@@ -67,8 +67,15 @@
 
       hosts = import ./home/02-hosts { inherit lib; };
 
-      # Split hosts by platform for routing to the correct output
+      # Split hosts by platform/distro for routing to the correct output
       darwinHosts = lib.filterAttrs (_: h: h.platform == "darwin") hosts;
+      nixosHosts = lib.filterAttrs
+        (name: h:
+          h.distro == "nixos"
+          && builtins.pathExists ./home/02-hosts/nixos/${name}/hardware-configuration.nix
+          && builtins.pathExists ./home/02-hosts/nixos/${name}/system.nix
+        )
+        hosts;
       linuxHosts = lib.filterAttrs (_: h: h.platform == "linux") hosts;
 
       # ── Linux hosts: standalone Home Manager (unchanged) ──────────────────
@@ -122,6 +129,44 @@
                   imports = host.modules ++ [
                     sops-nix.homeManagerModules.sops
                   ];
+                  home = {
+                    username = host.username;
+                    homeDirectory = host.homeDirectory;
+                  };
+                };
+              };
+            }
+          ];
+          specialArgs = {
+            inherit inputs;
+            hostName = name;
+            hostMeta = host;
+          };
+        };
+
+      # ── NixOS hosts: nixosSystem with embedded Home Manager ───────────────
+      mkNixOSConfiguration = name: host:
+        nixpkgs.lib.nixosSystem {
+          system = host.system;
+          modules = [
+            ./nixos/system.nix
+            ./home/02-hosts/nixos/${name}/hardware-configuration.nix
+            ./home/02-hosts/nixos/${name}/system.nix
+            home-manager.nixosModules.home-manager
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                extraSpecialArgs = {
+                  inherit inputs;
+                  hostName = name;
+                  hostMeta = host;
+                };
+                sharedModules = [
+                  sops-nix.homeManagerModules.sops
+                ];
+                users.${host.username} = {
+                  imports = host.modules;
                   home = {
                     username = host.username;
                     homeDirectory = host.homeDirectory;
@@ -195,7 +240,10 @@
       # macOS hosts — nix-darwin with embedded Home Manager
       darwinConfigurations = lib.mapAttrs mkDarwinConfiguration darwinHosts;
 
-      # Linux hosts — standalone Home Manager (unchanged)
+      # NixOS hosts — nixosSystem with embedded Home Manager
+      nixosConfigurations = lib.mapAttrs mkNixOSConfiguration nixosHosts;
+
+      # Linux hosts — standalone Home Manager (includes NixOS for --home-only)
       homeConfigurations = lib.mapAttrs mkHomeConfiguration linuxHosts;
     };
 }

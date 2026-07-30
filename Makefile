@@ -81,7 +81,7 @@ endif
 # Use HOST if provided, otherwise fall back to detected host
 CURRENT_HOST := $(or $(HOST),$(DETECTED_HOST))
 
-# Detect NixOS (standalone home-manager not in PATH on NixOS)
+# Detect NixOS
 IS_NIXOS := $(shell [ -f /etc/NIXOS ] && echo 1 || echo 0)
 
 help: ## Show this help message
@@ -620,7 +620,7 @@ ifeq ($(UNAME),Darwin)
 	fi
 else
 ifeq ($(IS_NIXOS),1)
-	@nix run .#homeConfigurations.$(CURRENT_HOST).activationPackage
+	@sudo nixos-rebuild switch --flake .#$(CURRENT_HOST)
 else
 	@home-manager switch --flake .#$(CURRENT_HOST)
 endif
@@ -648,9 +648,9 @@ ifeq ($(UNAME),Darwin)
 	fi
 else
 ifeq ($(IS_NIXOS),1)
-	@nix build .#homeConfigurations.$(CURRENT_HOST).activationPackage --out-link ./result && \
+	@sudo nixos-rebuild build --flake .#$(CURRENT_HOST) && \
 		nix --extra-experimental-features 'nix-command flakes' store diff-closures \
-			~/.local/state/home-manager/profiles/home-manager ./result
+			/run/current-system ./result
 else
 	@home-manager build --flake .#$(CURRENT_HOST) && \
 		nix --extra-experimental-features 'nix-command flakes' store diff-closures \
@@ -678,7 +678,9 @@ ifeq ($(UNAME),Darwin)
 		exit 1; \
 	fi
 else
-	@if command -v home-manager >/dev/null 2>&1; then \
+	@if [ "$(IS_NIXOS)" = "1" ]; then \
+		sudo nixos-rebuild switch --rollback; \
+	elif command -v home-manager >/dev/null 2>&1; then \
 		home-manager generations | head -2 | tail -1 | awk '{print $$NF}' | xargs -I {} bash -c "{}/activate"; \
 	else \
 		printf "$(YELLOW)home-manager not found — cannot rollback$(RESET)\n"; \
