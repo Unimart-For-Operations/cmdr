@@ -28,17 +28,19 @@
     xwayland.enable = true;
   };
 
+  # UWSM (Universal Wayland Session Manager) for systemd integration
+  environment.systemPackages = with pkgs; [ uwsm ];
+
   # ── greetd Display Manager (TUI login) ────────────────────────
   services.greetd = {
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd Hyprland";
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd '${pkgs.uwsm}/bin/uwsm start hyprland.desktop'";
         user = "greeter";
       };
     };
   };
-
   networking.hostName = "strix-nix";
   networking.networkmanager.enable = true;
 
