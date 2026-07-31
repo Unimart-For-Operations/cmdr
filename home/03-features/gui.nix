@@ -16,6 +16,10 @@
   imports = [
     # ── Graduated ────────────────────────────────────────────────────────
     ../04-modules/gui/graduated/ghostty
+    ../04-modules/gui/graduated/browsers/firefox
+    ../04-modules/gui/graduated/communication/teams-for-linux
+    ../04-modules/gui/graduated/kubernetes/headlamp
+    ../04-modules/gui/graduated/file-managers/thunar
 
     # ── Incubating ───────────────────────────────────────────────────────
     ../04-modules/gui/incubating/kitty
