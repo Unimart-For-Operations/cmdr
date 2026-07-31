@@ -123,17 +123,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1785283294,
-        "narHash": "sha256-AmpOEwtF5G4mp9tDQcOEOhOgCns5xb14ky07UL26Ras=",
+        "lastModified": 1785447177,
+        "narHash": "sha256-xGV/4XBWm0SrAu5obWce4ETDP0fEbCVNwDBqtquZRTA=",
         "ref": "refs/heads/main",
-        "rev": "6523f1cd4c8bc4f0e301f29b02fdf8522446f6e2",
-        "revCount": 70,
+        "rev": "340bdaa55167af7760a205ce0b7455c7a3a1045a",
+        "revCount": 8,
         "type": "git",
-        "url": "ssh://git@github.com/idpbuilder/meta.git"
+        "url": "ssh://git@github.com/Unimart-For-Operations/meta.git"
       },
       "original": {
         "type": "git",
-        "url": "ssh://git@github.com/idpbuilder/meta.git"
+        "url": "ssh://git@github.com/Unimart-For-Operations/meta.git"
       }
     },
     "nix-darwin": {

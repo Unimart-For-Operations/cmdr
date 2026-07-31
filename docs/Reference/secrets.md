@@ -285,7 +285,7 @@ If you cloned before this migration, you should:
 # Re-clone the repository after force push
 cd ..
 mv dev-control-plane dev-control-plane.old
-git clone git@github.com:idpbuilder/cmdr.git
+git clone git@github.com:Unimart-For-Operations/cmdr.git
 ```
 
 ## Additional Resources

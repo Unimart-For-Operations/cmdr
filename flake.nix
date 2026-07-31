@@ -39,12 +39,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # meta: idpbuilder org coordination repo — provides the unimart CLI
+    # meta: Unimart-For-Operations org coordination repo — provides the unimart CLI
     # Uses git+ssh:// (not github:) because this is a private repo.
     # The github: scheme uses the GitHub REST API which requires an access
     # token; git+ssh:// uses the user's existing SSH key.
     meta = {
-      url = "git+ssh://git@github.com/idpbuilder/meta.git";
+      url = "git+ssh://git@github.com/Unimart-For-Operations/meta.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

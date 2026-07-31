@@ -35,7 +35,7 @@ By the end of this process, you'll have:
 ### Known host (re-imaging a machine that already has a config):
 
 ```bash
-git clone git@github.com:idpbuilder/cmdr.git ~/cmdr
+git clone git@github.com:Unimart-For-Operations/cmdr.git ~/cmdr
 cd ~/cmdr
 make bootstrap
 make switch    # Auto-detects current host
@@ -46,7 +46,7 @@ make doctor
 ### New machine (first time, new host identity):
 
 ```bash
-git clone git@github.com:idpbuilder/cmdr.git ~/cmdr
+git clone git@github.com:Unimart-For-Operations/cmdr.git ~/cmdr
 cd ~/cmdr
 make bootstrap
 make new-host DISTRO=<distro> NAME=<name>
@@ -62,7 +62,7 @@ make doctor
 ### Step 1: Clone This Repository
 
 ```bash
-git clone git@github.com:idpbuilder/cmdr.git ~/cmdr
+git clone git@github.com:Unimart-For-Operations/cmdr.git ~/cmdr
 cd ~/cmdr
 ```
 
@@ -244,7 +244,7 @@ The devShell provides pinned development tools: `nixpkgs-fmt`, `nil` (Nix LSP), 
 Fresh machine (has: bash, curl, git)
          |
          v
-git clone git@github.com:idpbuilder/cmdr.git ~/cmdr
+git clone git@github.com:Unimart-For-Operations/cmdr.git ~/cmdr
 cd ~/cmdr
          |
          v

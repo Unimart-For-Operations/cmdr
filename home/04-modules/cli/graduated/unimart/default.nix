@@ -1,10 +1,10 @@
 # home/04-modules/cli/graduated/unimart/default.nix
 #
-# Unified CLI for the idpbuilder organization.
-# Built from the meta repo flake (git+ssh://git@github.com/idpbuilder/meta.git).
+# Unified CLI for the Unimart-For-Operations organization.
+# Built from the meta repo flake (git+ssh://git@github.com/Unimart-For-Operations/meta.git).
 #
 # Version is pinned via cmdr's flake.lock. To bump:
-#   1. Push changes to idpbuilder/meta
+#   1. Push changes to Unimart-For-Operations/meta
 #   2. Run: nix flake update meta (in cmdr)
 #   3. Run: make switch
 { config, inputs, pkgs, ... }:

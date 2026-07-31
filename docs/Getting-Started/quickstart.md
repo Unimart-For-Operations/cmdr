@@ -106,7 +106,7 @@ make update
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 
 # 2. Clone repository
-git clone git@github.com:idpbuilder/cmdr.git ~/cmdr
+git clone git@github.com:Unimart-For-Operations/cmdr.git ~/cmdr
 cd ~/cmdr
 
 # 3. Bootstrap prerequisites

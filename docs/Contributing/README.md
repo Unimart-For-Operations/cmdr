@@ -253,7 +253,7 @@ Only `bash`, `curl`, and `git` are required on the host. Everything else is inst
 The provisioning sequence for a new machine:
 
 ```bash
-git clone git@github.com:idpbuilder/cmdr.git ~/cmdr
+git clone git@github.com:Unimart-For-Operations/cmdr.git ~/cmdr
 cd ~/cmdr
 make bootstrap       # Installs Xcode CLT + Homebrew (macOS), Nix (all platforms)
 exec zsh             # Reload shell to pick up Nix in PATH
