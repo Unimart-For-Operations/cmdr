@@ -35,5 +35,6 @@
     ../04-modules/cli/graduated/azure
     ../04-modules/cli/graduated/pulumi
     ../04-modules/cli/graduated/unimart
+    ../04-modules/cli/graduated/claude-code
   ];
 }

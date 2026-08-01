@@ -20,7 +20,7 @@
     ../04-modules/gui/graduated/communication/teams-for-linux
     ../04-modules/gui/graduated/kubernetes/headlamp
     ../04-modules/gui/graduated/file-managers/thunar
-
+    ../04-modules/gui/graduated/vscode
     # ── Incubating ───────────────────────────────────────────────────────
     ../04-modules/gui/incubating/kitty
     ../04-modules/gui/incubating/alacritty
