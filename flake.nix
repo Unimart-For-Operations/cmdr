@@ -181,6 +181,77 @@
             hostMeta = host;
           };
         };
+      # ── Host configurations (hoisted so checks can reference them) ────────
+      darwinConfigurations = lib.mapAttrs mkDarwinConfiguration darwinHosts;
+      nixosConfigurations = lib.mapAttrs mkNixOSConfiguration nixosHosts;
+      homeConfigurations = lib.mapAttrs mkHomeConfiguration linuxHosts;
+
+      # ── Checks: run via `nix flake check` ─────────────────────────────────
+      # Each check is a derivation whose BUILD forces the referenced string to
+      # evaluate, so `nix flake check` performs real validation, not just
+      # top-level attribute evaluation.
+      checks = forAllSystems (system:
+        let
+          pkgs = pkgsFor system;
+
+          # Formatting gate — mirrors `nix fmt -- --check`.
+          format = pkgs.runCommand "cmdr-format-check"
+            {
+              src = self;
+              nativeBuildInputs = [ pkgs.nixpkgs-fmt ];
+            } ''
+            find "$src" -name '*.nix' -type f -print0 | xargs -0 nixpkgs-fmt --check
+            echo "format: OK" > $out
+          '';
+
+          # Theme integrity — no direct palette imports or raw hex literals.
+          theme-lint = pkgs.runCommand "cmdr-theme-lint"
+            {
+              src = self;
+              nativeBuildInputs = [ pkgs.bash ];
+            } ''
+            bash "$src/scripts/check-theme-lint.sh"
+            echo "theme-lint: OK" > $out
+          '';
+
+          # Forcing evaluation of a host config is a real check: it catches
+          # syntax errors, bad module options, and broken feature flags across
+          # every host (including darwin, evaluated from Linux).
+          #
+          # `builtins.trace`/`seq` force `drvPath` to evaluate when the check
+          # is instantiated, but the derivation itself never references it —
+          # so it stays an *evaluation* check and never pulls cross-system
+          # packages into the build closure.
+          evalCheck = name: drvPath:
+            builtins.seq
+              (builtins.trace "cmdr: evaluating host '${name}'" drvPath)
+              (pkgs.runCommand "cmdr-eval-${name}" { } ''
+                echo "eval ${name}: OK" > $out
+              '');
+
+          evalHome = lib.mapAttrs'
+            (name: _: lib.nameValuePair "eval-${name}"
+              (evalCheck name homeConfigurations.${name}.activationPackage.drvPath))
+            linuxHosts;
+
+          evalDarwin = lib.mapAttrs'
+            (name: _: lib.nameValuePair "eval-${name}"
+              (evalCheck name darwinConfigurations.${name}.system.drvPath))
+            darwinHosts;
+
+          evalNixOS = lib.mapAttrs'
+            (name: _: lib.nameValuePair "eval-${name}"
+              (evalCheck name nixosConfigurations.${name}.config.system.build.toplevel.drvPath))
+            nixosHosts;
+        in
+        {
+          inherit format;
+          "theme-lint" = theme-lint;
+        }
+        // evalHome
+        // evalDarwin
+        // evalNixOS
+      );
     in
     {
       # Development shells for working ON this repo
@@ -218,7 +289,10 @@
               echo ""
               echo "Available commands:"
               echo "  make help        - Show all available commands"
+              echo "  make ci          - Run static checks (gitleaks, fmt, theme-lint, flake, doctor)"
+              echo "  make ci-full     - Run ci plus the automated container test"
               echo "  make test        - Spin up Linux test container"
+              echo "  make test-run    - Automated container provision + verify + teardown"
               echo "  make list-hosts  - Show available Home Manager hosts"
               echo "  make fmt         - Format Nix code"
               echo ""
@@ -237,13 +311,11 @@
         (pkgsFor system).nixpkgs-fmt
       );
 
-      # macOS hosts — nix-darwin with embedded Home Manager
-      darwinConfigurations = lib.mapAttrs mkDarwinConfiguration darwinHosts;
-
-      # NixOS hosts — nixosSystem with embedded Home Manager
-      nixosConfigurations = lib.mapAttrs mkNixOSConfiguration nixosHosts;
-
-      # Linux hosts — standalone Home Manager (includes NixOS for --home-only)
-      homeConfigurations = lib.mapAttrs mkHomeConfiguration linuxHosts;
+      # Host configurations and checks — defined in the `let` block above so the
+      # checks can reference the configurations without self-referencing.
+      checks = checks;
+      darwinConfigurations = darwinConfigurations;
+      nixosConfigurations = nixosConfigurations;
+      homeConfigurations = homeConfigurations;
     };
 }

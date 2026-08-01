@@ -18,8 +18,12 @@ RUN apt-get update && \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Create user with sudo privileges and zsh as default shell
-RUN useradd -m -G sudo -s /bin/zsh nixuser && \
+# Create user with sudo privileges and zsh as default shell.
+# The base image ships a default `ubuntu` user at uid 1000; remove it so
+# nixuser can take uid 1000 and match the host user — keeping the mount-owner
+# uid aligned with the user inside the container.
+RUN userdel -r ubuntu 2>/dev/null || true && \
+    useradd -m -u 1000 -G sudo -s /bin/zsh nixuser && \
     echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # Switch to user

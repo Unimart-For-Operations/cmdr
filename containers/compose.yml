@@ -11,9 +11,14 @@ services:
       platforms:
         - linux/amd64
     
-    # Mount the repo as read-only to prevent accidental modifications
+    # Mount the repo as read-only to prevent accidental modifications.
+    # The parent meta repo is mounted so the container test can override the
+    # git+ssh meta input with a local path copy (git+ssh re-fetches recompute
+    # the input's narHash with the container's bundled libgit2, which can
+    # differ from the host's and fail the lock check). Local + ephemeral.
     volumes:
       - ..:/workspace:ro
+      - ${HOME}/repos/meta:/meta:ro
     
     # Keep container running for interactive use
     stdin_open: true

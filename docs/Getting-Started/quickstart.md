@@ -63,6 +63,9 @@ make rollback
 ### Container Testing
 
 ```bash
+# Automated smoke test: build, provision, verify, teardown (Linux only)
+make test-run
+
 # Build and start Ubuntu test container (Linux only)
 make test
 
@@ -73,7 +76,7 @@ make test-shell
 make test-clean
 ```
 
-**Note:** Container tests are blocked on macOS due to emulation limitations. These tests are designed for native Linux systems only.
+**Note:** Container tests are blocked on macOS due to emulation limitations. These tests are designed for native Linux systems only — bare-metal NixOS hosts are fully supported (`virtualisation.docker`). `make test-run` provisions the `cmdr` host by default; use `make test-run HOST=<name>` for another cli/tui host.
 
 ### Development Shell
 

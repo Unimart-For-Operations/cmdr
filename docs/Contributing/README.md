@@ -353,8 +353,11 @@ make list              # Show discovered hosts
 make tiers             # Show tier breakdown of all modules
 make promote           # Promote a module to a higher tier
 make test              # Start test container
+make test-run          # Automated provision + verify + teardown
 make test-shell        # Enter test container shell
 make test-tty          # TTY test
+make ci                # Run all local checks
+make ci-full           # ci + automated container test
 make fmt               # Format Nix code
 make update            # Update flake inputs
 make check             # Validate flake
@@ -498,20 +501,32 @@ footer
 
 ## Testing Strategy
 
+### Static + eval checks (`nix flake check`)
+
+The flake exposes a `checks` output that `nix flake check` builds:
+
+```bash
+make check                       # nix flake check
+```
+
+- `format` — `nixpkgs-fmt --check` over all `.nix` files
+- `theme-lint` — `scripts/check-theme-lint.sh`
+- `eval-<host>` — one per host; forces the full config to evaluate, including
+  darwin hosts evaluated from Linux
+
 ### Container Testing
 
-Safe, reproducible testing on Linux:
+Safe, reproducible integration testing on Linux (including bare-metal NixOS):
+
 ```bash
-make test-shell
-cd /workspace
-nix flake check                    # Validate syntax
-home-manager switch --flake .#cmdr
-nvim --version                     # Verify tools
+make test-run                    # automated: build, provision, verify, teardown
+make test-run HOST=<name>        # provision a different cli/tui host
+make test-shell                  # interactive shell
 ```
 
 **Container details:**
 - Base: Ubuntu 24.04 LTS
-- Platform: linux/amd64 (works on Apple Silicon)
+- Platform: linux/amd64 (native on x86_64 Linux)
 - Repository mounted at `/workspace` (read-only)
 - Auto-installs Nix on first run
 
@@ -520,7 +535,8 @@ nvim --version                     # Verify tools
 All CI runs locally — there are no remote CI services.
 
 1. **Pre-commit hook** - Runs gitleaks, `go fmt`, `go vet`, `nix fmt --check`, and theme lint on every commit (deployed via `unimart deli switch`, Nix-managed)
-2. **`make ci`** - Full local CI suite: secrets + formatting + flake check + `make doctor`
+2. **`make ci`** - Full local static suite: secrets + formatting + theme lint + flake check + `make doctor` + host eval
+3. **`make ci-full`** - `make ci` plus the automated container test (Linux only)
 
 See [CI Strategy](../Reference/ci.md) for full details.
 

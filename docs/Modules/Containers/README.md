@@ -42,17 +42,35 @@ docker info
 ### From Repository Root
 
 ```bash
-# Build and start container (Linux only)
+# Automated smoke test: build, provision, verify, teardown (Linux only)
+make test-run
+
+# Provision a specific cli/tui host (default: cmdr)
+make test-run HOST=<name>
+
+# Build and start container (Linux only, keep it running)
 make test
 
 # Enter interactive shell (Linux only)
 make test-shell
 
+# Provision config and drop into an interactive zsh (Linux only)
+make test-tty
+
 # Clean up completely (Linux only)
 make test-clean
 ```
 
-**macOS Note:** Container tests are blocked on macOS due to emulation limitations (QEMU seccomp issues with Nix sandbox). These tests are designed for native Linux systems only.
+`make test-run` is the CI-friendly entry point — it runs non-interactively,
+asserts on every step, and exits non-zero on failure. It is wired into
+`make ci-full` (the `make ci` static gate plus the container test).
+
+**Host selection:** `test-run`/`test-tty` default to the `cmdr` host because it
+is cli+tui only and activates cleanly headless. GUI/desktop hosts (e.g.
+`strix-nix`) pull in Hyprland/DMS and should not be activated in a container.
+Override with `HOST=<name>` or `TEST_HOST=<name>`.
+
+**macOS Note:** Container tests are blocked on macOS due to emulation limitations (QEMU seccomp issues with Nix sandbox). These tests are designed for native Linux systems only — including bare-metal NixOS hosts, where the Docker engine is managed via `virtualisation.docker.enable = true` in the host's `system.nix`.
 
 ### From This Directory
 
@@ -73,11 +91,19 @@ docker compose -f compose.yml down -v
 ## Container Details
 
 - **Base Image:** `docker.io/library/ubuntu:24.04`
-- **User:** `nixuser` (non-root with sudo)
-- **Nix:** Installed on first run via the official single-user installer
-- **Mount:** Repository mounted at `/workspace` (read-only)
+- **User:** `nixuser` (uid 1000, non-root with sudo)
+- **Nix:** Installed on first run via Determinate Nix (`--init none`)
+- **Mounts:** cmdr repo at `/workspace` (read-only), parent meta repo at `/meta` (read-only)
 - **Working Dir:** `/home/nixuser`
 - **Platform:** `linux/amd64`
+
+The meta repo is mounted (not fetched over `git+ssh`) because the container's
+Determinate Nix bundles a different libgit2 than host nix: a fresh `git+ssh`
+fetch recomputes the `meta` input's narHash and can mismatch the value pinned
+in `flake.lock`. `make test-run` instead overrides the input to a local copy
+(`--override-input meta /tmp/meta-src`) and exports it with `git archive` so
+submodule content (e.g. the `idpbuilder` module) is excluded exactly like nix's
+own git fetcher.
 
 ## Usage Examples
 

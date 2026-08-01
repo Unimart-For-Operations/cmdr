@@ -63,16 +63,33 @@ The full local CI suite. Run this before pushing to main:
 make ci
 ```
 
-Runs four checks in sequence:
+Runs six checks in sequence:
 
-| Step | Check | Equivalent CI job |
-|------|-------|-------------------|
-| 1/4 | Secret scanning (`gitleaks detect`) | — |
-| 2/4 | Nix formatting (`nix fmt -- --check .`) | — |
-| 3/4 | Flake evaluation (`nix flake check`) | `nix-flake-check.yml` |
-| 4/4 | Environment health (`make doctor`) | `verify-*` jobs |
+| Step | Check | Notes |
+|------|-------|-------|
+| 1/6 | Secret scanning (`gitleaks detect`) | Full repo scan |
+| 2/6 | Nix formatting (`nix fmt -- --check .`) | Run `make fmt` to fix |
+| 3/6 | Theme lint (`scripts/check-theme-lint.sh`) | Direct palette imports / raw hex colors |
+| 4/6 | Flake evaluation (`nix flake check`) | Also builds the `checks` output (below) |
+| 5/6 | Environment health (`make doctor`) | 18-item host check |
+| 6/6 | Host compatibility (`make compat`) | Cross-platform eval matrix |
 
 Reports a pass/fail summary at the end.
+
+## `make ci-full`
+
+Adds the **automated container test** to `make ci` — build the Ubuntu test
+container, provision a Home Manager host, verify the toolchain, teardown:
+
+```bash
+make ci-full          # ci + container test (default host: cmdr)
+make ci-full HOST=x   # provision a different cli/tui host in the container
+```
+
+Linux only (requires a reachable Docker daemon). On macOS this target is
+blocked with an explanatory error. The container test is intentionally **not**
+part of `make ci` so the fast static gate stays fast; run `ci-full` before
+pushing anything that touches Home Manager modules.
 
 ## What Each Check Does
 
@@ -93,14 +110,22 @@ make fmt
 
 ### Flake Evaluation
 
-Runs `nix flake check`, which evaluates all outputs defined in `flake.nix` — every `homeConfiguration`, every `darwinConfiguration`, the dev shell, and the formatter. This catches:
+Runs `nix flake check`, which evaluates all outputs defined in `flake.nix` and **builds the `checks` output** — a real test suite, not just evaluation:
+
+- `checks.<system>.format` — `nixpkgs-fmt --check` over the source tree
+- `checks.<system>.theme-lint` — runs `scripts/check-theme-lint.sh`
+- `checks.<system>.eval-<host>` — one per host (linux, darwin, nixos); forces the full host config to evaluate, catching syntax errors, bad module options, and broken feature flags **across every host from any platform**
+
+This catches:
 
 - Syntax errors in any `.nix` file
 - Missing imports or undefined variables
 - Type errors in module options
 - Broken package references
+- Linux-only packages leaking into darwin hosts (e.g. `thunar`)
+- Cross-platform eval regressions (darwin configs evaluated from Linux)
 
-This replaces the former `nix-flake-check.yml` GitHub Actions workflow. Note that `nix flake check` validates all systems (Linux + macOS) regardless of which platform you're running on.
+This replaces the former `nix-flake-check.yml` and `theme-lint.yml` GitHub Actions workflows. Note that `nix flake check` evaluates the current system's checks; darwin hosts are still *evaluated* (not built) from Linux, so platform mistakes surface immediately.
 
 ### Environment Health (`make doctor`)
 
@@ -117,13 +142,14 @@ Verifies that the current machine has all expected tools and configurations. Che
 This project previously used GitHub Actions for CI:
 
 | Former workflow | Replacement |
-|----------------|-------------|
-| `nix-flake-check.yml` (Linux + macOS matrix) | Pre-commit hook + `make ci` step 3 |
-| `linux-container-test.yml` (5-job pipeline) | `make doctor` + `make test`/`make tty` (Linux) |
+|----------------|------------|
+| `nix-flake-check.yml` (Linux + macOS matrix) | Pre-commit hook + `make ci` step 4 |
+| `linux-container-test.yml` (5-job pipeline) | `make doctor` + `make test-run`/`test-tty` (Linux) |
+| `theme-lint.yml` | `make ci` step 3 + `checks.<system>.theme-lint` |
 
 The GitHub Actions workflows were removed to eliminate per-minute billing costs on a private repository. The macOS CI runner alone accounted for ~60% of the flake check cost due to GitHub's 10x billing multiplier for macOS minutes.
 
-The container integration test pipeline (`build` -> `provision` -> `verify-*`) is preserved as local Make targets (`make test`, `make tty`, `make test-tty`) for Linux machines.
+The container integration test pipeline (`build` -> `provision` -> `verify-*`) is preserved as local Make targets (`make test`, `make test-run`, `make test-tty`) for Linux machines, and gated behind `make ci-full`.
 
 ## Future: Gitea Actions
 

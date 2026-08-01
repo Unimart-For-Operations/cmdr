@@ -1,4 +1,4 @@
-.PHONY: help bootstrap register new-host doctor hooks sync-docs pull-docs dev ci compat test test-shell test-tty test-clean fmt check update clean list switch diff apply rollback switch-studio switch-macbook switch-cmdr switch-cachyos diff-studio diff-macbook diff-cmdr diff-cachyos tiers promote aliases
+.PHONY: help bootstrap register new-host doctor hooks sync-docs pull-docs dev ci ci-full compat test test-run test-shell test-tty test-clean fmt check update clean list switch diff apply rollback switch-studio switch-macbook switch-cmdr switch-cachyos diff-studio diff-macbook diff-cmdr diff-cachyos tiers promote aliases
 
 # Default target
 .DEFAULT_GOAL := help
@@ -96,7 +96,8 @@ help: ## Show this help message
 	@echo ""
 	@printf "$(BOLD)Development:$(RESET)\n"
 	@printf "  $(CYAN)dev$(RESET)             Enter development shell\n"
-	@printf "  $(CYAN)ci$(RESET)              Run all local checks (secrets, fmt, flake, doctor)\n"
+	@printf "  $(CYAN)ci$(RESET)              Run all local checks (secrets, fmt, theme-lint, flake, doctor)\n"
+	@printf "  $(CYAN)ci-full$(RESET)         Run ci plus automated container test\n"
 	@printf "  $(CYAN)doctor$(RESET)          Verify environment health\n"
 	@printf "  $(CYAN)check$(RESET)           Run nix flake checks\n"
 	@printf "  $(CYAN)compat$(RESET)          Evaluate all host configs (linux + darwin)\n"
@@ -121,8 +122,9 @@ help: ## Show this help message
 	@echo ""
 	@printf "$(BOLD)Testing (Linux only):$(RESET)\n"
 	@printf "  $(CYAN)test$(RESET)            Build and start test container\n"
+	@printf "  $(CYAN)test-run$(RESET)        Automated provision + verify + teardown\n"
 	@printf "  $(CYAN)test-shell$(RESET)      Enter interactive container shell\n"
-	@printf "  $(CYAN)test-tty$(RESET)        Provision cmdr config and open zsh in container\n"
+	@printf "  $(CYAN)test-tty$(RESET)        Provision config and open zsh in container\n"
 	@printf "  $(CYAN)test-clean$(RESET)      Stop containers and cleanup\n"
 	@echo ""
 	@printf "$(BOLD)Other:$(RESET)\n"
@@ -336,14 +338,14 @@ pull-docs: ## Pull Obsidian edits back to repo (reverse sync for phone/tablet ed
 dev: ## Enter development shell
 	@nix develop
 
-ci: ## Run all local checks (replaces GitHub CI)
+ci: ## Run all local checks (secrets, fmt, theme-lint, flake, doctor, compat)
 	@ERRORS=0; \
 	echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"; \
 	printf "$(BOLD)cmdr — Local CI$(RESET)\n"; \
 	echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"; \
 	echo ""; \
 	\
-	printf "$(BOLD)[1/4] Secret scanning (gitleaks)$(RESET)\n"; \
+	printf "$(BOLD)[1/6] Secret scanning (gitleaks)$(RESET)\n"; \
 	if command -v gitleaks >/dev/null 2>&1; then \
 		if gitleaks detect --verbose --redact 2>&1; then \
 			printf "  $(GREEN)✓ No secrets detected$(RESET)\n"; \
@@ -356,7 +358,7 @@ ci: ## Run all local checks (replaces GitHub CI)
 	fi; \
 	echo ""; \
 	\
-	printf "$(BOLD)[2/4] Nix formatting$(RESET)\n"; \
+	printf "$(BOLD)[2/6] Nix formatting$(RESET)\n"; \
 	if nix fmt -- --check . 2>/dev/null; then \
 		printf "  $(GREEN)✓ All files formatted$(RESET)\n"; \
 	else \
@@ -365,7 +367,16 @@ ci: ## Run all local checks (replaces GitHub CI)
 	fi; \
 	echo ""; \
 	\
-	printf "$(BOLD)[3/4] Nix flake check$(RESET)\n"; \
+	printf "$(BOLD)[3/6] Theme lint$(RESET)\n"; \
+	if bash scripts/check-theme-lint.sh 2>&1; then \
+		printf "  $(GREEN)✓ Theme integrity OK$(RESET)\n"; \
+	else \
+		printf "  $(YELLOW)⚠ Theme lint failed$(RESET)\n"; \
+		ERRORS=$$((ERRORS+1)); \
+	fi; \
+	echo ""; \
+	\
+	printf "$(BOLD)[4/6] Nix flake check$(RESET)\n"; \
 	if nix flake check 2>&1; then \
 		printf "  $(GREEN)✓ Flake check passed$(RESET)\n"; \
 	else \
@@ -374,11 +385,11 @@ ci: ## Run all local checks (replaces GitHub CI)
 	fi; \
 	echo ""; \
 	\
-	printf "$(BOLD)[4/5] Environment health$(RESET)\n"; \
+	printf "$(BOLD)[5/6] Environment health$(RESET)\n"; \
 	$(MAKE) --no-print-directory doctor; \
 	echo ""; \
 	\
-	printf "$(BOLD)[5/5] Cross-platform host eval$(RESET)\n"; \
+	printf "$(BOLD)[6/6] Cross-platform host eval$(RESET)\n"; \
 	if $(MAKE) --no-print-directory compat; then \
 		printf "  $(GREEN)✓ Host compatibility checks passed$(RESET)\n"; \
 	else \
@@ -394,6 +405,18 @@ ci: ## Run all local checks (replaces GitHub CI)
 		printf "$(YELLOW)⚠ $$ERRORS check(s) failed$(RESET)\n"; \
 	fi; \
 	echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+ci-full: ## Run all local checks plus the automated container test (Linux only)
+	@$(MAKE) --no-print-directory ci
+	@echo ""
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@printf "$(BOLD)cmdr — Container Test$(RESET)\n"
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+ifneq ($(UNAME),Darwin)
+	@bash scripts/container-test.sh "$(TEST_HOST)"
+else
+	$(LINUX_GUARD)
+endif
 
 # ── Health check ──────────────────────────────────────────────────────────
 DOCTOR_PASS  := \033[0;32m[pass]\033[0m
@@ -724,8 +747,24 @@ define LINUX_GUARD
 	@exit 1
 endef
 
+# Guard: require a reachable Docker daemon
+define DOCKER_GUARD
+	@if ! docker info >/dev/null 2>&1; then \
+		printf "$(RED)✗ Docker daemon is not reachable$(RESET)\n"; \
+		echo "  Start it and retry: sudo systemctl enable --now docker"; \
+		exit 1; \
+	fi
+endef
+
+# Host used by container tests. Defaults to `cmdr` (cli+tui only, safe to
+# activate headless); override with HOST=<name> or TEST_HOST=<name>.
+# GUI/desktop hosts (e.g. strix-nix) pull in Hyprland/DMS and won't activate
+# in a container.
+TEST_HOST := $(or $(HOST),cmdr)
+
 test: ## Build and start Linux test container (Linux only)
 ifneq ($(UNAME),Darwin)
+	$(DOCKER_GUARD)
 	@echo "Starting Linux test container..."
 	@cd containers && docker compose -f compose.yml up --build
 else
@@ -734,17 +773,26 @@ endif
 
 test-shell: ## Start container and enter interactive shell (Linux only)
 ifneq ($(UNAME),Darwin)
+	$(DOCKER_GUARD)
 	@echo "Entering Linux container shell..."
 	@cd containers && docker compose -f compose.yml run --rm linux-test /bin/bash
 else
 	$(LINUX_GUARD)
 endif
 
-test-tty: ## Build container, provision cmdr config, open interactive zsh (Linux only)
+test-run: ## Automated container test: build, provision, verify, teardown (Linux only)
 ifneq ($(UNAME),Darwin)
+	@bash scripts/container-test.sh "$(TEST_HOST)"
+else
+	$(LINUX_GUARD)
+endif
+
+test-tty: ## Build container, provision $(TEST_HOST) config, open interactive zsh (Linux only)
+ifneq ($(UNAME),Darwin)
+	$(DOCKER_GUARD)
 	@echo "Building container..."
 	@cd containers && docker compose -f compose.yml up -d --build
-	@echo "Installing Nix and applying terminal configuration (cmdr)..."
+	@echo "Provisioning $(TEST_HOST) config..."
 	@cd containers && docker compose -f compose.yml exec -T -e USER=cmdr -e HOME=/home/cmdr linux-test bash -c "\
 		if ! command -v nix &> /dev/null && [ ! -f /nix/var/nix/profiles/default/bin/nix ]; then \
 			/home/nixuser/install-nix.sh; \
@@ -754,9 +802,14 @@ ifneq ($(UNAME),Darwin)
 		sleep 2 && \
 		. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && \
 		git config --global --add safe.directory /workspace && \
+		rm -rf /tmp/cmdr-src /tmp/meta-src && \
+		cp -a /workspace/. /tmp/cmdr-src/ && \
+		rm -rf /tmp/cmdr-src/.git /tmp/cmdr-src/.direnv && \
+		mkdir -p /tmp/meta-src && \
+		git -C /meta archive HEAD | tar -x -C /tmp/meta-src && \
 		rm -f /home/nixuser/.zshrc && \
-		cd /workspace && \
-		nix run .#homeConfigurations.cmdr.activationPackage"
+		cd /tmp/cmdr-src && \
+		nix run .#homeConfigurations.$(TEST_HOST).activationPackage --override-input meta /tmp/meta-src"
 	@echo "Dropping into interactive shell..."
 	@cd containers && docker compose -f compose.yml exec linux-test /bin/zsh
 else
