@@ -1,0 +1,117 @@
+# DMS matugen k9s skin — auto-generated, do not edit.
+# Colors from the active DMS wallpaper theme. Written by the dms/matugen module
+# to ~/.config/k9s/skins/dank.yaml and selected via settings.k9s.ui.skin on DMS
+# hosts (see tui/incubating/k9s). Keeps the same semantic roles as _shared/theme:
+#   text       -> colors.on_surface
+#   base       -> colors.background
+#   mantle     -> colors.surface_container_lowest
+#   surface0   -> colors.surface_container
+#   surface1   -> colors.surface_container_high
+#   overlay0   -> colors.outline_variant
+#   overlay1   -> colors.surface_variant
+#   overlay2   -> colors.outline
+#   subtext0   -> colors.outline
+#   mauve      -> colors.primary
+#   lavender   -> colors.primary_fixed_dim
+#   blue       -> dank16.color4
+#   green      -> dank16.color2
+#   teal       -> dank16.color6
+#   yellow     -> dank16.color3
+#   peach      -> dank16.color3
+#   red        -> colors.error
+#   maroon     -> colors.error_container
+#   pink       -> colors.tertiary
+#   rosewater  -> colors.tertiary
+#   flamingo   -> colors.tertiary_container
+k9s:
+  body:
+    fgColor: '{{colors.on_surface.default.hex}}'
+    bgColor: '{{colors.background.default.hex}}'
+    logoColor: '{{colors.primary.default.hex}}'
+  prompt:
+    fgColor: '{{colors.on_surface.default.hex}}'
+    bgColor: '{{colors.surface_container_lowest.default.hex}}'
+    suggestColor: '{{dank16.color4.default.hex}}'
+  help:
+    fgColor: '{{colors.on_surface.default.hex}}'
+    bgColor: '{{colors.background.default.hex}}'
+    sectionColor: '{{dank16.color2.default.hex}}'
+    keyColor: '{{dank16.color4.default.hex}}'
+    numKeyColor: '{{colors.error_container.default.hex}}'
+  frame:
+    title:
+      fgColor: '{{dank16.color6.default.hex}}'
+      bgColor: '{{colors.background.default.hex}}'
+      highlightColor: '{{colors.tertiary.default.hex}}'
+      counterColor: '{{dank16.color3.default.hex}}'
+      filterColor: '{{dank16.color2.default.hex}}'
+    border:
+      fgColor: '{{colors.primary.default.hex}}'
+      focusColor: '{{colors.primary_fixed_dim.default.hex}}'
+    menu:
+      fgColor: '{{colors.on_surface.default.hex}}'
+      keyColor: '{{dank16.color4.default.hex}}'
+      numKeyColor: '{{colors.error_container.default.hex}}'
+    crumbs:
+      fgColor: '{{colors.background.default.hex}}'
+      bgColor: '{{colors.error_container.default.hex}}'
+      activeColor: '{{colors.tertiary_container.default.hex}}'
+    status:
+      newColor: '{{dank16.color4.default.hex}}'
+      modifyColor: '{{colors.primary_fixed_dim.default.hex}}'
+      addColor: '{{dank16.color2.default.hex}}'
+      pendingColor: '{{dank16.color3.default.hex}}'
+      errorColor: '{{colors.error.default.hex}}'
+      highlightColor: '{{dank16.color6.default.hex}}'
+      killColor: '{{colors.primary.default.hex}}'
+      completedColor: '{{colors.outline_variant.default.hex}}'
+  info:
+    fgColor: '{{dank16.color3.default.hex}}'
+    sectionColor: '{{colors.on_surface.default.hex}}'
+  views:
+    table:
+      fgColor: '{{colors.on_surface.default.hex}}'
+      bgColor: '{{colors.background.default.hex}}'
+      cursorFgColor: '{{colors.surface_container.default.hex}}'
+      cursorBgColor: '{{colors.surface_container_high.default.hex}}'
+      markColor: '{{colors.tertiary.default.hex}}'
+      header:
+        fgColor: '{{dank16.color3.default.hex}}'
+        bgColor: '{{colors.background.default.hex}}'
+        sorterColor: '{{dank16.color6.default.hex}}'
+    xray:
+      fgColor: '{{colors.on_surface.default.hex}}'
+      bgColor: '{{colors.background.default.hex}}'
+      cursorColor: '{{colors.surface_container_high.default.hex}}'
+      cursorTextColor: '{{colors.background.default.hex}}'
+      graphicColor: '{{colors.tertiary.default.hex}}'
+    charts:
+      bgColor: '{{colors.background.default.hex}}'
+      chartBgColor: '{{colors.background.default.hex}}'
+      dialBgColor: '{{colors.background.default.hex}}'
+      defaultDialColors: ['{{dank16.color2.default.hex}}', '{{colors.error.default.hex}}']
+      defaultChartColors: ['{{dank16.color2.default.hex}}', '{{colors.error.default.hex}}']
+      resourceColors:
+        cpu: ['{{colors.primary.default.hex}}', '{{dank16.color4.default.hex}}']
+        mem: ['{{dank16.color3.default.hex}}', '{{dank16.color3.default.hex}}']
+    yaml:
+      keyColor: '{{dank16.color4.default.hex}}'
+      valueColor: '{{colors.on_surface.default.hex}}'
+      colonColor: '{{colors.outline.default.hex}}'
+    logs:
+      fgColor: '{{colors.on_surface.default.hex}}'
+      bgColor: '{{colors.background.default.hex}}'
+      indicator:
+        fgColor: '{{colors.primary_fixed_dim.default.hex}}'
+        bgColor: '{{colors.background.default.hex}}'
+        toggleOnColor: '{{dank16.color2.default.hex}}'
+        toggleOffColor: '{{colors.outline.default.hex}}'
+  dialog:
+    fgColor: '{{dank16.color3.default.hex}}'
+    bgColor: '{{colors.outline.default.hex}}'
+    buttonFgColor: '{{colors.background.default.hex}}'
+    buttonBgColor: '{{colors.surface_variant.default.hex}}'
+    buttonFocusFgColor: '{{colors.background.default.hex}}'
+    buttonFocusBgColor: '{{colors.tertiary.default.hex}}'
+    labelFgColor: '{{colors.tertiary.default.hex}}'
+    fieldFgColor: '{{colors.on_surface.default.hex}}'

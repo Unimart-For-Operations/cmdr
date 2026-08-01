@@ -1,5 +1,5 @@
 # DMS Matugen User Templates — propagate DMS theme colors to apps without a
-# built-in DMS matugen template (tmux, opencode, nvim-astro).
+# built-in DMS matugen template (tmux, opencode, nvim-astro, k9s, yazi).
 #
 # DMS merges user matugen plugin configs from `~/.config/matugen/dms/configs/`
 # into every matugen run (unconditionally, regardless of app detection), so
@@ -47,6 +47,18 @@ in
     force = true;
     source = ./templates/starship.toml;
   };
+  xdg.configFile."matugen/templates/k9s.yaml" = {
+    force = true;
+    source = ./templates/k9s.yaml;
+  };
+  xdg.configFile."matugen/templates/yazi-theme.toml" = {
+    force = true;
+    source = ./templates/yazi-theme.toml;
+  };
+  xdg.configFile."matugen/templates/yazi-colors.lua" = {
+    force = true;
+    source = ./templates/yazi-colors.lua;
+  };
 
   # Plugin configs telling matugen where to write each generated theme.
   xdg.configFile."matugen/dms/configs/tmux.toml" = {
@@ -64,5 +76,13 @@ in
   xdg.configFile."matugen/dms/configs/starship.toml" = {
     force = true;
     text = deployConfig "starship";
+  };
+  xdg.configFile."matugen/dms/configs/k9s.toml" = {
+    force = true;
+    text = deployConfig "k9s";
+  };
+  xdg.configFile."matugen/dms/configs/yazi.toml" = {
+    force = true;
+    text = deployConfig "yazi";
   };
 }

@@ -1,0 +1,6 @@
+# DMS matugen user template config — k9s
+# Input template + absolute output path (DMS writes this section raw, so no
+# SHELL_DIR/CONFIG_DIR placeholders). Regenerated on every theme change.
+[templates.dankk9s]
+input_path = '@MATUGEN_TEMPLATES@/k9s.yaml'
+output_path = '@HOME@/.config/k9s/skins/dank.yaml'

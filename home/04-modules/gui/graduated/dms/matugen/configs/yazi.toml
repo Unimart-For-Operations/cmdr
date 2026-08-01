@@ -1,0 +1,12 @@
+# DMS matugen user template config — yazi
+# Input template + absolute output path (DMS writes this section raw, so no
+# SHELL_DIR/CONFIG_DIR placeholders). Regenerated on every theme change.
+# yazi reads a single theme.toml (no include mechanism), so matugen owns the
+# whole file on DMS hosts; the yatline palette is loaded by init.lua via dofile.
+[templates.dankyazitheme]
+input_path = '@MATUGEN_TEMPLATES@/yazi-theme.toml'
+output_path = '@HOME@/.config/yazi/theme.toml'
+
+[templates.dankyazipalette]
+input_path = '@MATUGEN_TEMPLATES@/yazi-colors.lua'
+output_path = '@HOME@/.config/yazi/dank-palette.lua'
