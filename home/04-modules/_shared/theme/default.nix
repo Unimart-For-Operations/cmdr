@@ -24,7 +24,9 @@ let
   themeFun = themeName:
     let
       palette = import ./palettes/${themeName}.nix;
-      parts = builtins.split "-" themeName;
+      # builtins.split includes the separator as an empty-list element, so
+      # filter down to the string parts before extracting the variant.
+      parts = builtins.filter (p: builtins.isString p) (builtins.split "-" themeName);
       variant = if (builtins.length parts) > 1 then builtins.elemAt parts 1 else themeName;
       isMocha = variant == "mocha";
     in

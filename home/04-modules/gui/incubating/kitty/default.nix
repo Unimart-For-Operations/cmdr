@@ -1,15 +1,45 @@
 # Kitty terminal emulator configuration
-# Theme: Catppuccin Frappe (sourced from _shared/theme)
+# Theme: Catppuccin Frappe (sourced from _shared/theme) on non-DMS hosts.
+# On DMS hosts colors come from DMS's matugen-generated dank-theme.conf.
 # Keybindings: cmd+ on macOS, ctrl+ on Linux
-{ pkgs, lib, hostMeta ? { }, ... }:
+{ config, pkgs, lib, hostMeta ? { }, ... }:
 
 let
   isDarwin = pkgs.stdenv.isDarwin;
+  # On hosts running the DMS desktop shell, colors are owned by DMS (matugen)
+  # so themes applied in DMS propagate to the terminal. The dank-material-shell
+  # module is only imported on DMS hosts, so its `enable` flag is the signal.
+  isDms = (config.programs.dank-material-shell or { }).enable or false;
   mod = if isDarwin then "cmd" else "ctrl";
   theme = (import ../../../_shared/theme).call (if builtins.hasAttr "theme" hostMeta then hostMeta.theme else "catppuccin-frappe");
   p = theme.palette;
   a = p.ansi;
   f = theme.fonts.monoKitty;
+  catppuccinColors = {
+    # ── Catppuccin Frappe palette (from shared theme) ──────────────────────
+    foreground = p.text;
+    background = p.base;
+    selection_foreground = p.base;
+    selection_background = p.rosewater;
+
+    color0 = a.color0;
+    color8 = a.color8;
+    color1 = a.color1;
+    color9 = a.color9;
+    color2 = a.color2;
+    color10 = a.color10;
+    color3 = a.color3;
+    color11 = a.color11;
+    color4 = a.color4;
+    color12 = a.color12;
+    color5 = a.color5;
+    color13 = a.color13;
+    color6 = a.color6;
+    color14 = a.color14;
+    color7 = a.color7;
+    color15 = a.color15;
+    url_color = p.blue;
+  };
 in
 {
   programs.kitty = {
@@ -36,31 +66,11 @@ in
       "${mod}+9" = "goto_tab 9";
     };
 
+    # DMS hosts: source colors from DMS's matugen output. kitty applies the
+    # include after `settings`, so it wins over any shared-theme colors.
+    extraConfig = lib.mkIf isDms "include ${config.home.homeDirectory}/.config/kitty/dank-theme.conf";
+
     settings = {
-      # ── Catppuccin Frappe palette (from shared theme) ──────────────────────
-      foreground = p.text;
-      background = p.base;
-      selection_foreground = p.base;
-      selection_background = p.rosewater;
-
-      color0 = a.color0;
-      color8 = a.color8;
-      color1 = a.color1;
-      color9 = a.color9;
-      color2 = a.color2;
-      color10 = a.color10;
-      color3 = a.color3;
-      color11 = a.color11;
-      color4 = a.color4;
-      color12 = a.color12;
-      color5 = a.color5;
-      color13 = a.color13;
-      color6 = a.color6;
-      color14 = a.color14;
-      color7 = a.color7;
-      color15 = a.color15;
-      url_color = p.blue;
-
       # ── Cursor ────────────────────────────────────────────────────────────
       cursor_shape = "beam";
       cursor_beam_thickness = "1.5";
@@ -103,6 +113,8 @@ in
       # ── macOS-specific ────────────────────────────────────────────────────
       macos_option_as_alt = "yes";
       macos_titlebar_color = "background";
-    };
+    }
+    # Shared-theme Catppuccin colors only where DMS isn't owning terminal colors
+    // (if isDms then { } else catppuccinColors);
   };
 }

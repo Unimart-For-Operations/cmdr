@@ -1,0 +1,7 @@
+# DMS matugen user template config — nvim-astro colorscheme
+# Writes colors/dms.lua to the nvim-astro XDG data dir so it lands on the
+# runtimepath (stdpath("data")/site) without touching read-only ~/.config.
+# nvim-astro's astroui.lua sets colorscheme = "dms" when this file exists.
+[templates.danknvim]
+input_path = '@MATUGEN_TEMPLATES@/nvim-colors.lua'
+output_path = '@HOME@/.local/share/nvim-astro/site/colors/dms.lua'

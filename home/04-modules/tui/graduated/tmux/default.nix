@@ -1,8 +1,20 @@
 { config, pkgs, lib, hostMeta ? { }, ... }:
 
 let
+  # On hosts running the DMS desktop shell, tmux colors come from DMS's matugen
+  # (dank-theme.conf, regenerated on every theme change). The Catppuccin values
+  # below stay as a non-DMS fallback.
+  isDms = (config.programs.dank-material-shell or { }).enable or false;
   theme = (import ../../../_shared/theme).call (if hostMeta != null then hostMeta.theme else "catppuccin-frappe");
   p = theme.palette;
+  # On DMS hosts, source the matugen-generated theme (regenerated on every theme
+  # change). if-shell guards against the file not existing yet (e.g. first boot
+  # before matugen has run), keeping the Catppuccin values above as fallback.
+  dmsThemeSource =
+    if isDms then ''
+      # DMS matugen theme — overrides Catppuccin colors above on DMS hosts
+      if-shell "test -f ~/.config/tmux/dank-theme.conf" "source-file ~/.config/tmux/dank-theme.conf"
+    '' else "";
 in
 {
   # Import layout scripts module
@@ -136,9 +148,10 @@ in
       # ============================================
       # Clear scrollback buffer with prefix + K
       bind K clear-history
-      
+
       # Toggle synchronize-panes with prefix + S
       bind S set-window-option synchronize-panes
+      ${dmsThemeSource}
       
       # ============================================
       # Sesh Session Management

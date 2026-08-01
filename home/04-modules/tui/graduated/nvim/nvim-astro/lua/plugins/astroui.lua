@@ -7,8 +7,12 @@ return {
   "AstroNvim/astroui",
   ---@type AstroUIOpts
   opts = {
-    -- change colorscheme
-    colorscheme = "catppuccin",
+    -- Colorscheme: on DMS hosts matugen generates colors/dms.lua into the
+    -- nvim-astro XDG data dir (stdpath("data")/site is on the runtimepath), so
+    -- use it when present; otherwise fall back to Catppuccin.
+    colorscheme = ((vim.uv or vim.loop).fs_stat(vim.fn.stdpath("data") .. "/site/colors/dms.lua"))
+        and "dms"
+      or "catppuccin",
     -- AstroUI allows you to easily modify highlight groups easily for any and all colorschemes
     highlights = {
       init = { -- this table overrides highlights in all themes

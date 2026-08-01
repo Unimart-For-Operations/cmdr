@@ -14,6 +14,7 @@
 {
   imports = [
     inputs.dms.homeModules.dank-material-shell
+    ./matugen # user matugen templates: propagate colors to tmux/opencode/nvim-astro
   ];
 
   programs.dank-material-shell = {

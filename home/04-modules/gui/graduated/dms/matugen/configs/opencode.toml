@@ -1,0 +1,5 @@
+# DMS matugen user template config — opencode
+# Writes a "dank" theme JSON that opencode loads via theme = "dank" on DMS hosts.
+[templates.dankopencode]
+input_path = '@MATUGEN_TEMPLATES@/opencode.json'
+output_path = '@HOME@/.config/opencode/themes/dank.json'
