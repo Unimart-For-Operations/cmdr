@@ -1,0 +1,7 @@
+# DMS matugen user template config — starship prompt
+# Writes the entire ~/.config/starship.toml (starship reads a single config
+# file with no include mechanism). The starship module points STARSHIP_CONFIG
+# here on DMS hosts; non-DMS hosts keep the Catppuccin settings in the module.
+[templates.dankstarship]
+input_path = '@MATUGEN_TEMPLATES@/starship.toml'
+output_path = '@HOME@/.config/starship.toml'

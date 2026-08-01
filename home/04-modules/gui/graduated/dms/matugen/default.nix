@@ -43,6 +43,10 @@ in
     force = true;
     source = ./templates/nvim-colors.lua;
   };
+  xdg.configFile."matugen/templates/starship.toml" = {
+    force = true;
+    source = ./templates/starship.toml;
+  };
 
   # Plugin configs telling matugen where to write each generated theme.
   xdg.configFile."matugen/dms/configs/tmux.toml" = {
@@ -56,5 +60,9 @@ in
   xdg.configFile."matugen/dms/configs/nvim.toml" = {
     force = true;
     text = deployConfig "nvim";
+  };
+  xdg.configFile."matugen/dms/configs/starship.toml" = {
+    force = true;
+    text = deployConfig "starship";
   };
 }
