@@ -77,7 +77,12 @@ let
         return 0
       fi
       local nix_files
-      nix_files=$(git diff --cached --name-only --diff-filter=ACMR -- '*.nix' || true)
+      # Exclude Backstage scaffolder templates: their *.nix skeletons carry
+      # scaffolder placeholders (dollar-brace pairs) that are invalid Nix by
+      # design, so nixfmt cannot parse them. Rendered output is validated
+      # downstream, not at commit time.
+      nix_files=$(git diff --cached --name-only --diff-filter=ACMR -- '*.nix' \
+        | grep -v 'scaffolder-templates/' || true)
       if [[ -z "''${nix_files}" ]]; then return 0; fi
 
       gate_info "checking nix fmt"
