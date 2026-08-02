@@ -47,7 +47,7 @@
   # Local IDP endpoints (idpbuilder runs on this host). The default
   # resolver can't reach *.localtest.me, so pin the dev hosts to loopback.
   networking.extraHosts = ''
-    127.0.0.1 cnoe.localtest.me gitea.cnoe.localtest.me argocd.cnoe.localtest.me backstage.cnoe.localtest.me
+    127.0.0.1 cnoe.localtest.me gitea.cnoe.localtest.me argocd.cnoe.localtest.me backstage.cnoe.localtest.me docs.cnoe.localtest.me
   '';
 
   programs.nix-ld = {
