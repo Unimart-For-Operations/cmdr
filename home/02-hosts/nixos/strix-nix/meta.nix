@@ -6,8 +6,8 @@
   gitName = "Andrew Mortimer";
   gitEmail = "andrcmdr@protonmail.com";
   role = "developer-workstation";
-  capabilities = [ "baseline" "terminal-dev" "operator" "idp-local" "desktop" ];
-  features = [ "cli" "tui" "gui" ];
+  capabilities = [ "baseline" "terminal-dev" "operator" "idp-local" "desktop" "gaming" ];
+  features = [ "cli" "tui" "gui" "gaming" ];
   desktop = [ "hyprland" "dms" ];
   theme = "catppuccin-mocha";
 }

@@ -124,9 +124,10 @@ let
   # Features auto-include graduated + incubating modules.
   featureModules = {
     cli = ../03-features/cli.nix;
-    tui = ../03-features/tui.nix;
+    gaming = ../03-features/gaming.nix;
     gui = ../03-features/gui.nix;
     tty = ../03-features/tty.nix;
+    tui = ../03-features/tui.nix;
   };
 
   # ── Desktop module resolution ──────────────────────────────────────────
