@@ -1,0 +1,6 @@
+# DMS matugen user template config — greetd console palette
+# Input template + absolute output path (DMS writes this section raw, so no
+# SHELL_DIR/CONFIG_DIR placeholders). Regenerated on every theme change.
+[templates.dankvtrgb]
+input_path = '@MATUGEN_TEMPLATES@/vtrgb'
+output_path = '@HOME@/.config/greetd/dank-vtrgb'

@@ -1,0 +1,6 @@
+# DMS matugen user template config — tmux welcome splash
+# Input template + absolute output path (DMS writes this section raw, so no
+# SHELL_DIR/CONFIG_DIR placeholders). Regenerated on every theme change.
+[templates.dankwelcome]
+input_path = '@MATUGEN_TEMPLATES@/welcome.conf'
+output_path = '@HOME@/.config/tmux/dank-welcome.conf'
