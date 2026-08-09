@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, hostMeta, ... }:
 
 {
   # ── Boot ──────────────────────────────────────────────────────
@@ -52,6 +52,28 @@
 
   # ── Bluetooth (Intel AX211) ─────────────────────────────────────
   hardware.bluetooth.enable = true;
+
+  # ── ASUS ROG keyboard backlight ─────────────────────────────────
+  # LED lives at /sys/class/leds/asus::kbd_backlight (max 3). Grant
+  # the video group write access so brightnessctl works without sudo,
+  # and restore the last brightness at boot.
+  users.users.${hostMeta.username}.extraGroups = [ "video" ];
+
+  services.udev.extraRules = ''
+    SUBSYSTEM=="leds", KERNEL=="asus::kbd_backlight", ACTION=="add|change", GROUP="video", MODE="0660"
+  '';
+
+  systemd.services.kbd-backlight = {
+    description = "Restore ASUS keyboard backlight brightness";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "systemd-udev-settle.service" ];
+    wants = [ "systemd-udev-settle.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.bash}/bin/bash -c 'echo 3 > /sys/class/leds/asus::kbd_backlight/brightness'";
+    };
+  };
 
   programs.nix-ld = {
     enable = true;
