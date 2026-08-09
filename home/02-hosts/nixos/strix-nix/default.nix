@@ -4,6 +4,7 @@
   # Add overrides here only when this machine diverges from the shared baseline.
 
   home.packages = [
+    pkgs.bluetuith
     pkgs.gcc
     pkgs.kbd
     pkgs.terminus_font

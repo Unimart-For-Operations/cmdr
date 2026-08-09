@@ -50,6 +50,9 @@
     127.0.0.1 cnoe.localtest.me gitea.cnoe.localtest.me argocd.cnoe.localtest.me backstage.cnoe.localtest.me docs.cnoe.localtest.me
   '';
 
+  # ── Bluetooth (Intel AX211) ─────────────────────────────────────
+  hardware.bluetooth.enable = true;
+
   programs.nix-ld = {
     enable = true;
     libraries = with pkgs; [
