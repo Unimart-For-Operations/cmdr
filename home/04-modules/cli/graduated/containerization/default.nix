@@ -9,5 +9,6 @@
   imports = [
     ./graduated/docker.nix
     ./graduated/kubernetes.nix
+    ./incubating/podman.nix
   ];
 }
