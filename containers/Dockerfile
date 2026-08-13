@@ -18,6 +18,15 @@ RUN apt-get update && \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Install Go toolchain (required to build unimart). go.mod requires >= 1.25.5,
+# newer than Ubuntu 24.04's apt golang (1.22), so use the official binary tarball.
+RUN curl -fsSL https://go.dev/dl/go1.25.5.linux-amd64.tar.gz -o /tmp/go.tar.gz && \
+    rm -rf /usr/local/go && \
+    tar -C /usr/local -xzf /tmp/go.tar.gz && \
+    rm /tmp/go.tar.gz && \
+    ln -s /usr/local/go/bin/go /usr/local/bin/go && \
+    ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt
+
 # Create user with sudo privileges and zsh as default shell.
 # The base image ships a default `ubuntu` user at uid 1000; remove it so
 # nixuser can take uid 1000 and match the host user — keeping the mount-owner
