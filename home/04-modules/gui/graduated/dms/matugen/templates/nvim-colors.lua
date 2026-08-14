@@ -8,7 +8,7 @@
 --   text  -> colors.on_surface
 --   surface0/base -> colors.surface_container / colors.background
 --   mauve -> colors.primary
---   blue  -> colors.primary_fixed
+--   blue  -> dank16.color4
 --   green -> colors.secondary
 --   red   -> colors.error
 --   peach/yellow -> dank16.color3
@@ -20,25 +20,25 @@ local C = {
   crust = "{{colors.surface_dim.default.hex}}",
   surface0 = "{{colors.surface_container.default.hex}}",
   surface1 = "{{colors.surface_container_high.default.hex}}",
-  surface2 = "{{colors.surface_variant.default.hex}}",
-  overlay0 = "{{colors.outline_variant.default.hex}}",
-  overlay1 = "{{colors.outline.default.hex}}",
+  surface2 = "{{colors.surface_container_high.default.hex}}",
+  overlay0 = "{{colors.outline.default.hex}}",
+  overlay1 = "{{colors.on_surface_variant.default.hex}}",
   overlay2 = "{{colors.outline.default.hex}}",
   subtext0 = "{{colors.outline.default.hex}}",
   subtext1 = "{{colors.on_surface_variant.default.hex}}",
   text = "{{colors.on_surface.default.hex}}",
   mauve = "{{colors.primary.default.hex}}",
-  blue = "{{colors.primary_fixed.default.hex}}",
-  sapphire = "{{colors.primary_fixed_dim.default.hex}}",
+  blue = "{{dank16.color4.default.hex}}",
+  sapphire = "{{colors.tertiary.default.hex}}",
   green = "{{colors.secondary.default.hex}}",
   teal = "{{colors.secondary.default.hex}}",
   sky = "{{colors.tertiary.default.hex}}",
   pink = "{{colors.tertiary.default.hex}}",
   red = "{{colors.error.default.hex}}",
-  maroon = "{{colors.error_container.default.hex}}",
+  maroon = "{{colors.error.default.hex}}",
   peach = "{{dank16.color3.default.hex}}",
   yellow = "{{dank16.color3.default.hex}}",
-  flamingo = "{{colors.tertiary_container.default.hex}}",
+  flamingo = "{{colors.tertiary.default.hex}}",
   rosewater = "{{colors.tertiary.default.hex}}",
 }
 

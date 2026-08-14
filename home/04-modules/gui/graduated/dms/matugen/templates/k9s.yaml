@@ -7,22 +7,22 @@
 #   mantle     -> colors.surface_container_lowest
 #   surface0   -> colors.surface_container
 #   surface1   -> colors.surface_container_high
-#   overlay0   -> colors.outline_variant
-#   overlay1   -> colors.surface_variant
+#   overlay0   -> colors.outline
+#   overlay1   -> colors.on_surface_variant
 #   overlay2   -> colors.outline
 #   subtext0   -> colors.outline
 #   mauve      -> colors.primary
-#   lavender   -> colors.primary_fixed_dim
+#   lavender   -> colors.primary
 #   blue       -> dank16.color4
 #   green      -> dank16.color2
 #   teal       -> dank16.color6
 #   yellow     -> dank16.color3
 #   peach      -> dank16.color3
 #   red        -> colors.error
-#   maroon     -> colors.error_container
+#   maroon     -> colors.error
 #   pink       -> colors.tertiary
 #   rosewater  -> colors.tertiary
-#   flamingo   -> colors.tertiary_container
+#   flamingo   -> colors.tertiary
 k9s:
   body:
     fgColor: '{{colors.on_surface.default.hex}}'
@@ -37,7 +37,7 @@ k9s:
     bgColor: '{{colors.background.default.hex}}'
     sectionColor: '{{dank16.color2.default.hex}}'
     keyColor: '{{dank16.color4.default.hex}}'
-    numKeyColor: '{{colors.error_container.default.hex}}'
+    numKeyColor: '{{colors.error.default.hex}}'
   frame:
     title:
       fgColor: '{{dank16.color6.default.hex}}'
@@ -47,24 +47,24 @@ k9s:
       filterColor: '{{dank16.color2.default.hex}}'
     border:
       fgColor: '{{colors.primary.default.hex}}'
-      focusColor: '{{colors.primary_fixed_dim.default.hex}}'
+      focusColor: '{{colors.primary.default.hex}}'
     menu:
       fgColor: '{{colors.on_surface.default.hex}}'
       keyColor: '{{dank16.color4.default.hex}}'
-      numKeyColor: '{{colors.error_container.default.hex}}'
+      numKeyColor: '{{colors.error.default.hex}}'
     crumbs:
       fgColor: '{{colors.background.default.hex}}'
-      bgColor: '{{colors.error_container.default.hex}}'
-      activeColor: '{{colors.tertiary_container.default.hex}}'
+      bgColor: '{{colors.error.default.hex}}'
+      activeColor: '{{colors.on_surface.default.hex}}'
     status:
       newColor: '{{dank16.color4.default.hex}}'
-      modifyColor: '{{colors.primary_fixed_dim.default.hex}}'
+      modifyColor: '{{colors.tertiary.default.hex}}'
       addColor: '{{dank16.color2.default.hex}}'
       pendingColor: '{{dank16.color3.default.hex}}'
       errorColor: '{{colors.error.default.hex}}'
       highlightColor: '{{dank16.color6.default.hex}}'
-      killColor: '{{colors.primary.default.hex}}'
-      completedColor: '{{colors.outline_variant.default.hex}}'
+      killColor: '{{colors.error.default.hex}}'
+      completedColor: '{{colors.outline.default.hex}}'
   info:
     fgColor: '{{dank16.color3.default.hex}}'
     sectionColor: '{{colors.on_surface.default.hex}}'
@@ -72,7 +72,7 @@ k9s:
     table:
       fgColor: '{{colors.on_surface.default.hex}}'
       bgColor: '{{colors.background.default.hex}}'
-      cursorFgColor: '{{colors.surface_container.default.hex}}'
+      cursorFgColor: '{{colors.on_surface.default.hex}}'
       cursorBgColor: '{{colors.surface_container_high.default.hex}}'
       markColor: '{{colors.tertiary.default.hex}}'
       header:
@@ -83,7 +83,7 @@ k9s:
       fgColor: '{{colors.on_surface.default.hex}}'
       bgColor: '{{colors.background.default.hex}}'
       cursorColor: '{{colors.surface_container_high.default.hex}}'
-      cursorTextColor: '{{colors.background.default.hex}}'
+      cursorTextColor: '{{colors.on_surface.default.hex}}'
       graphicColor: '{{colors.tertiary.default.hex}}'
     charts:
       bgColor: '{{colors.background.default.hex}}'
@@ -102,15 +102,15 @@ k9s:
       fgColor: '{{colors.on_surface.default.hex}}'
       bgColor: '{{colors.background.default.hex}}'
       indicator:
-        fgColor: '{{colors.primary_fixed_dim.default.hex}}'
+        fgColor: '{{colors.tertiary.default.hex}}'
         bgColor: '{{colors.background.default.hex}}'
         toggleOnColor: '{{dank16.color2.default.hex}}'
         toggleOffColor: '{{colors.outline.default.hex}}'
   dialog:
     fgColor: '{{dank16.color3.default.hex}}'
-    bgColor: '{{colors.outline.default.hex}}'
-    buttonFgColor: '{{colors.background.default.hex}}'
-    buttonBgColor: '{{colors.surface_variant.default.hex}}'
+    bgColor: '{{colors.surface_container_high.default.hex}}'
+    buttonFgColor: '{{colors.on_surface.default.hex}}'
+    buttonBgColor: '{{colors.background.default.hex}}'
     buttonFocusFgColor: '{{colors.background.default.hex}}'
     buttonFocusBgColor: '{{colors.tertiary.default.hex}}'
     labelFgColor: '{{colors.tertiary.default.hex}}'
