@@ -1,18 +1,15 @@
-{ config, pkgs, lib, hostMeta ? { }, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   # On hosts running the DMS desktop shell, tmux colors come from DMS's matugen
-  # (dank-theme.conf, regenerated on every theme change). The Catppuccin values
-  # below stay as a non-DMS fallback.
+  # (dank-theme.conf, regenerated on every theme change).
   isDms = (config.programs.dank-material-shell or { }).enable or false;
-  theme = (import ../../../_shared/theme).call (if hostMeta != null then hostMeta.theme else "catppuccin-frappe");
-  p = theme.palette;
   # On DMS hosts, source the matugen-generated theme (regenerated on every theme
   # change). if-shell guards against the file not existing yet (e.g. first boot
-  # before matugen has run), keeping the Catppuccin values above as fallback.
+  # before matugen has run).
   dmsThemeSource =
     if isDms then ''
-      # DMS matugen theme — overrides Catppuccin colors above on DMS hosts
+      # DMS matugen theme
       if-shell "test -f ~/.config/tmux/dank-theme.conf" "source-file ~/.config/tmux/dank-theme.conf"
     '' else "";
 in
@@ -54,11 +51,6 @@ in
       # Color support with true color
       set -ga terminal-overrides ",xterm-256color:Tc,screen-256color:Tc,tmux-256color:Tc"
 
-      # Force pane content defaults so normal text/background follow theme
-      # Use surface0 instead of base so pane background is visibly non-black.
-      setw -g window-style 'fg=${p.text},bg=${p.surface0}'
-      setw -g window-active-style 'fg=${p.text},bg=${p.surface0}'
-      
       # ============================================
       # Pane Navigation (Vim-style)
       # ============================================
@@ -92,7 +84,8 @@ in
       # ============================================
       # Status Bar Configuration
       # ============================================
-      # Catppuccin Frappe theme — colours sourced from _shared/theme
+      # Colors come from DMS's matugen on DMS hosts (dank-theme.conf); elsewhere
+      # tmux uses its stock colors.
       # Update status bar every 5 seconds
       set -g status-interval 5
       
@@ -100,32 +93,26 @@ in
       set -g status-position top
       set -g status-justify left
       
-      # Status bar colors (Frappe base background with text foreground)
-      set -g status-style 'bg=${p.base} fg=${p.text}'
-      
       # Left side of status bar (session name)
-      set -g status-left '#[fg=${p.base},bg=${p.blue},bold] #S #[fg=${p.blue},bg=${p.base}]'
       set -g status-left-length 40
       
       # Right side of status bar (includes continuum save indicator)
-      set -g status-right '#{?#{continuum_status},#[fg=${p.green}]  #{continuum_status} ,}#[fg=${p.surface2},bg=${p.base}]#[fg=${p.text},bg=${p.surface2}] %d/%m #[fg=${p.blue},bg=${p.surface2}]#[fg=${p.base},bg=${p.blue},bold] %H:%M:%S '
+      set -g status-right '#{?#{continuum_status},#[fg=green]  #{continuum_status} ,}%d/%m %H:%M:%S '
       set -g status-right-length 60
       
       # Window status (inactive)
-      setw -g window-status-style 'fg=${p.text} bg=${p.surface0}'
       setw -g window-status-format ' #I:#W#F '
       
       # Window status (active)
-      setw -g window-status-current-style 'fg=${p.base} bg=${p.mauve} bold'
       setw -g window-status-current-format ' #I:#W#F '
       
-      # Pane border colors (Frappe surface colors)
+      # Pane border colors
       set -g pane-border-lines single
       set -g pane-border-indicators off
       set -g pane-border-status off
-      # Keep borders static (no active-pane highlighting) and use theme mauve.
-      set -g pane-border-style 'fg=${p.mauve}'
-      set -g pane-active-border-style 'fg=${p.mauve}'
+      # Keep borders static (no active-pane highlighting)
+      set -g pane-border-style default
+      set -g pane-active-border-style default
       
       # ============================================
       # Copy Mode Configuration

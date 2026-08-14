@@ -23,11 +23,6 @@
   # Available: "cli", "tui", "gui", "tty"
   features = [ "cli" "tui" ];
 
-  # Per-host theme selection (name must match a palette file in
-  # home/04-modules/_shared/theme/palettes).
-  # Recommended for tty-engineer role: "catppuccin-mocha"
-  theme = "catppuccin-frappe";
-
   # Desktop environments (requires "gui" in features).
   # Available: "hyprland", "dms"
   # desktop = [ "hyprland" "dms" ];

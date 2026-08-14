@@ -9,5 +9,4 @@
   capabilities = [ "baseline" "terminal-dev" "operator" "idp-local" "desktop" ];
   features = [ "cli" "tui" "gui" ];
   desktop = [ "hyprland" "dms" ];
-  theme = "catppuccin-frappe";
 }

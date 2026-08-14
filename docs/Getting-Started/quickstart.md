@@ -146,7 +146,7 @@ cmdr/
 │   ├── 02-hosts/          # Host inventory (grouped by distro)
 │   ├── 03-features/       # base.nix (universal) + composable features (cli, tui, gui)
 │   └── 04-modules/        # Tool-specific configs organised by UI capability
-│       ├── _shared/       # Cross-module resources (theme/)
+│       ├── _shared/       # Cross-module resources (fonts/)
 │       ├── cli/           # TTY-safe, non-interactive tools
 │       │   └── graduated/ # atuin, aws, azure, bat, containerization, core-utils, direnv, eza, fonts, fzf, git, go, opencode, pulumi, python, ssh, starship, terraform, zoxide, zsh
 │       ├── tui/           # TTY-safe, full-screen (tmux, nvim, lazygit, yazi, + incubating: k9s, sesh)

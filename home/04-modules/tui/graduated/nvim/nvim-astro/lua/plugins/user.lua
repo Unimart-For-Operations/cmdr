@@ -28,15 +28,6 @@ return {
     end,
   },
 
-  -- == Catppuccin Theme ==
-  {
-    "catppuccin/nvim",
-    name = "catppuccin",
-    opts = {
-      flavour = "frappe",
-    },
-  },
-
   -- == Render Markdown (Inline Markdown Preview) ==
   {
     "MeanderingProgrammer/render-markdown.nvim",

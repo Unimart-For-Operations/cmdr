@@ -80,7 +80,7 @@ Loaded by `03-features/gui.nix`:
 
 ### Shared
 
-- `_shared/theme/` — Catppuccin Frappe palette, semantic colors, fonts. Importable by any module.
+- `_shared/fonts/` — shared terminal font metrics. Importable by any module.
 
 ## Adding a New Module
 

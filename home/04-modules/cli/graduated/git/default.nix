@@ -526,17 +526,6 @@ let
     # Gate: gitleaks secret scan
     check_gitleaks  || errors=$((errors + 1))
 
-    # Gate: theme lint (cmdr-specific — only fires in the cmdr repo)
-    if [[ -f "$(repo_root)/scripts/check-theme-lint.sh" ]]; then
-      gate_info "running theme lint"
-      if bash "$(repo_root)/scripts/check-theme-lint.sh"; then
-        gate_pass "theme lint"
-      else
-        gate_fail "theme lint"
-        errors=$((errors + 1))
-      fi
-    fi
-
     # Dispatch to repo-local .githooks/pre-commit
     dispatch_repo_hook "pre-commit" "$@" || errors=$((errors + 1))
 

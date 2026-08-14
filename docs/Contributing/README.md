@@ -21,7 +21,7 @@ The project manages the **"agnostic layer"** (tools, configs, shell, editors) wh
 - **Shell**: ZSH with modular configuration
 - **Editor**: 2 Neovim configurations via NVIM_APPNAME (AstroNvim + Nixvim)
 - **Terminal**: Ghostty (primary), Kitty, Alacritty
-- **Theme**: Catppuccin Frappe everywhere
+- **Theme**: Stock tool themes; DMS/matugen colors on DMS hosts
 - **Supported Platforms**: macOS (aarch64-darwin), Linux (x86_64-linux)
 
 ## Project Structure
@@ -56,7 +56,7 @@ cmdr/
 │   │   └── gui.nix              # GPU-accelerated terminal emulators (require display server)
 │   └── 04-modules/              # Modular tool configurations (CNCF-style tiers)
 │       ├── _shared/             # Cross-module resources
-│       │   └── theme/           # Catppuccin Frappe palette, semantic colors, fonts
+│       │   └── fonts/           # Shared terminal font metrics
 │       ├── cli/                 # TTY-safe, non-interactive tools
 │       │   └── graduated/       # 20 modules: atuin, aws, azure, bat, containerization, core-utils, direnv, eza, fonts, fzf, git, go, opencode, pulumi, python, ssh, starship, terraform, zoxide, zsh
 │       ├── tui/                 # TTY-safe, full-screen terminal apps
@@ -603,7 +603,7 @@ Functions in `05-functions.zsh`:
 
 ### Kubernetes
 
-- K9s TUI with Catppuccin skin
+- K9s TUI (stock skin; DMS matugen skin on DMS hosts)
 - Kubectl aliases and autocompletion
 - Context switching integrated with AWS
 

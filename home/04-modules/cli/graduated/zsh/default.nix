@@ -23,8 +23,6 @@ let
   ezaIgnore = ''"Applications|Desktop|Documents|Downloads|Library|Movies|Music|Pictures|Public"'';
   ezaBase = "--group-directories-first --icons --ignore-glob ${ezaIgnore}";
   ttyRole = builtins.hasAttr "role" hostMeta && hostMeta.role == "tty-engineer";
-  theme = (import ../../../_shared/theme).call (if builtins.hasAttr "theme" hostMeta then hostMeta.theme else "catppuccin-frappe");
-  p = theme.palette;
 in
 {
   programs.zsh = {
@@ -151,58 +149,6 @@ in
           unset DOCKER_HOST
         fi
       '')
-
-      (lib.mkOrder 875 (lib.optionalString ttyRole ''
-        # Linux virtual console palette on login shells.
-        if [[ -o login && "''${TERM:-}" == "linux" ]] && command -v setvtrgb >/dev/null 2>&1; then
-          if [[ -x "$HOME/.local/bin/apply-vtrgb-theme" ]]; then
-            "$HOME/.local/bin/apply-vtrgb-theme" >/dev/null 2>&1 || true
-          fi
-        fi
-      ''))
-
-      (lib.mkOrder 880 (lib.optionalString ttyRole ''
-        # Apply terminal palette for tty-focused hosts (including tmux passthrough)
-        _apply_terminal_palette() {
-          case "''${TERM:-}" in
-            linux|dumb) return ;;
-          esac
-
-          _emit_osc() {
-            if [[ -n "''${TMUX:-}" ]]; then
-              printf '\ePtmux;\e\e]%s\a\e\\' "$1"
-            else
-              printf '\e]%s\a' "$1"
-            fi
-          }
-
-          _emit_osc '4;0;${p.ansi.color0}'
-          _emit_osc '4;1;${p.ansi.color1}'
-          _emit_osc '4;2;${p.ansi.color2}'
-          _emit_osc '4;3;${p.ansi.color3}'
-          _emit_osc '4;4;${p.ansi.color4}'
-          _emit_osc '4;5;${p.ansi.color5}'
-          _emit_osc '4;6;${p.ansi.color6}'
-          _emit_osc '4;7;${p.ansi.color7}'
-          _emit_osc '4;8;${p.ansi.color8}'
-          _emit_osc '4;9;${p.ansi.color9}'
-          _emit_osc '4;10;${p.ansi.color10}'
-          _emit_osc '4;11;${p.ansi.color11}'
-          _emit_osc '4;12;${p.ansi.color12}'
-          _emit_osc '4;13;${p.ansi.color13}'
-          _emit_osc '4;14;${p.ansi.color14}'
-          _emit_osc '4;15;${p.ansi.color15}'
-
-          _emit_osc '10;${p.text}'
-          _emit_osc '11;${p.base}'
-          _emit_osc '12;${p.rosewater}'
-
-          unfunction _emit_osc 2>/dev/null || true
-        }
-
-        _apply_terminal_palette
-        unfunction _apply_terminal_palette 2>/dev/null || true
-      ''))
 
       # Multiplexer auto-start (tmux)
       # Runs late enough that env is fully set, but before tool integrations.

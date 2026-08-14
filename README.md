@@ -121,7 +121,7 @@ cmdr/
 │   ├── 02-hosts/          # Host configurations (macos/, arch/, nixos/, ubuntu/)
 │   ├── 03-features/       # Feature modules (base.nix, cli.nix, tui.nix, gui.nix)
 │   └── 04-modules/        # Tool modules organized by tier
-│       ├── _shared/theme/ # Global Catppuccin Frappe palette
+│       ├── _shared/fonts/ # Shared font config (terminal metrics)
 │       ├── cli/graduated/ # TTY-safe CLI tools (20 modules)
 │       ├── tui/graduated/ # Terminal UI (nvim, tmux, lazygit, yazi)
 │       ├── gui/graduated/ # Desktop apps (ghostty, hyprland, dms)

@@ -27,7 +27,7 @@ home/
     ├── cli/{graduated,incubating,sandbox}/
     ├── tui/{graduated,incubating,sandbox}/
     ├── gui/{graduated,incubating,sandbox}/
-    └── _shared/theme/              Catppuccin Frappe shared palette
+    └── _shared/fonts/              Shared font config (terminal metrics)
 ```
 
 ## Tiered Module System

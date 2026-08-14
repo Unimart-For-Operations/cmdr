@@ -10,5 +10,4 @@
   features = [ "cli" "tui" ];
   # No gui — TTY-only, no display server
   # No desktop modules — add when Hyprland/DMS is needed
-  theme = "catppuccin-mocha";
 }

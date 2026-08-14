@@ -1,12 +1,10 @@
-# Comprehensive Nixvim configuration with Catppuccin Frappe theme
+# Comprehensive Nixvim configuration
 # Designed to provide feature parity with AstroNvim (minus Obsidian.nvim)
-# Theme: sourced from _shared/theme
+# Colorscheme: stock (nvim default). On DMS hosts matugen generates a dms
+# colorscheme handled by the nvim-astro distro, not this nixvim binary.
 
-{ hostMeta ? { }, ... }:
+{ ... }:
 
-let
-  theme = (import ../../../_shared/theme).call (if builtins.hasAttr "theme" hostMeta then hostMeta.theme else "catppuccin-frappe");
-in
 {
   # Core Neovim options
   opts = {
@@ -43,25 +41,7 @@ in
   # Leader keys
   globals = {
     mapleader = " "; # Space as leader
-    maplocalleader = ","; # Comma as local leader
-  };
-
-  # Catppuccin Frappe theme
-  colorschemes.catppuccin = {
-    enable = true;
-    settings = {
-      flavour = theme.toolThemes.catppuccin;
-      transparent_background = false;
-      integrations = {
-        cmp = true;
-        gitsigns = true;
-        nvimtree = true;
-        treesitter = true;
-        telescope.enabled = true;
-        indent_blankline.enabled = true;
-        which_key = true;
-      };
-    };
+    maplocalleader = ","; # Local comma as leader
   };
 
   # Plugin configuration
@@ -208,7 +188,7 @@ in
       enable = true;
       settings = {
         options = {
-          theme = theme.toolThemes.lualine;
+          theme = "auto"; # follow the active colorscheme
           globalstatus = true;
         };
       };

@@ -1,8 +1,8 @@
 # Alacritty terminal emulator configuration
 # Parity target: Ghostty config
-# Theme: Catppuccin Frappe (sourced from _shared/theme) on non-DMS hosts.
-# On DMS hosts colors come from DMS's matugen-generated dank-theme.toml.
-{ pkgs, lib, config, hostMeta ? { }, ... }:
+# Fonts sourced from _shared/fonts. Colors are owned by DMS's matugen on DMS
+# hosts (dank-theme.toml); elsewhere alacritty uses its stock colors.
+{ pkgs, lib, config, ... }:
 
 let
   isDarwin = pkgs.stdenv.isDarwin;
@@ -10,70 +10,14 @@ let
   # so themes applied in DMS propagate to the terminal. The dank-material-shell
   # module is only imported on DMS hosts, so its `enable` flag is the signal.
   isDms = (config.programs.dank-material-shell or { }).enable or false;
-  theme = (import ../../../_shared/theme).call (if builtins.hasAttr "theme" hostMeta then hostMeta.theme else "catppuccin-frappe");
-  p = theme.palette;
-  a = p.ansi;
-  f = theme.fonts.mono;
-  catppuccinColors = {
-    # ── Appearance ─────────────────────────────────────────────────────────
-    # Catppuccin Frappe palette (from shared theme)
-    colors = {
-      primary = {
-        background = p.base;
-        foreground = p.text;
-      };
-      cursor = {
-        text = p.base;
-        cursor = p.rosewater;
-      };
-      selection = {
-        text = p.base;
-        background = p.rosewater;
-      };
-      normal = {
-        black = a.color0;
-        red = a.color1;
-        green = a.color2;
-        yellow = a.color3;
-        blue = a.color4;
-        magenta = a.color5;
-        cyan = a.color6;
-        white = a.color7;
-      };
-      bright = {
-        black = a.color8;
-        red = a.color9;
-        green = a.color10;
-        yellow = a.color11;
-        blue = a.color12;
-        magenta = a.color13;
-        cyan = a.color14;
-        white = a.color15;
-      };
-      footer_bar = {
-        background = p.mantle;
-        foreground = p.text;
-      };
-      hints = {
-        start = {
-          background = p.yellow;
-          foreground = p.base;
-        };
-        end = {
-          background = p.surface2;
-          foreground = p.base;
-        };
-      };
-    };
-  };
+  f = (import ../../../_shared/fonts).mono;
 in
 {
   programs.alacritty = {
     enable = true;
 
     settings = {
-      # DMS hosts: pull colors from DMS's matugen output. Imports are applied
-      # on top of this config, so they override the shared-theme colors.
+      # DMS hosts: pull colors from DMS's matugen output.
       import = lib.mkIf isDms [ "${config.home.homeDirectory}/.config/alacritty/dank-theme.toml" ];
 
       # ── Shell ──────────────────────────────────────────────────────────────
@@ -93,18 +37,18 @@ in
           family = f.family;
           style = "Italic";
         };
-        # Use the shared theme mono font size. Add 0.0 to ensure a float
+        # Use the shared fonts mono font size. Add 0.0 to ensure a float
         # value (Alacritty expects a float for size).
         size = f.size + 0.0;
 
-        # Cell height and offset are derived from the shared theme so
-        # different terminals align more closely. Use the theme values
+        # Cell height and offset are derived from the shared fonts so
+        # different terminals align more closely. Use the font values
         # converted into the shape Alacritty expects.
         offset = {
           x = f.offset.x;
           y = f.offset.y;
         };
-        # If the theme provides a lineHeight, scale the cell height by it.
+        # If the fonts module provides a lineHeight, scale the cell height by it.
         # Alacritty doesn't accept a fractional lineHeight directly, so we
         # emulate it with the y-offset and cell padding when necessary.
         builtin_box_drawing = true;
@@ -176,8 +120,6 @@ in
       env = {
         TERM = "xterm-256color";
       };
-    }
-    # Shared-theme Catppuccin colors only where DMS isn't owning terminal colors
-    // (if isDms then { } else catppuccinColors);
+    };
   };
 }

@@ -280,7 +280,7 @@ register: ## Register this machine: make register [NAME=<name>] [GIT_NAME="..."]
 	if [ -n "$$OPTIONAL" ]; then \
 		printf "$$OPTIONAL\n" >> "$$HOST_DIR/meta.nix"; \
 	fi; \
-	printf '  theme = "catppuccin-frappe";\n}\n' >> "$$HOST_DIR/meta.nix"; \
+	printf '}\n' >> "$$HOST_DIR/meta.nix"; \
 	\
 	printf '{ ... }:\n\n{\n  # Add overrides here only when this machine diverges from the shared baseline.\n}\n' \
 		> "$$HOST_DIR/default.nix"; \
@@ -338,14 +338,14 @@ pull-docs: ## Pull Obsidian edits back to repo (reverse sync for phone/tablet ed
 dev: ## Enter development shell
 	@nix develop
 
-ci: ## Run all local checks (secrets, fmt, theme-lint, flake, doctor, compat)
+ci: ## Run all local checks (secrets, fmt, flake, doctor, compat)
 	@ERRORS=0; \
 	echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"; \
 	printf "$(BOLD)cmdr — Local CI$(RESET)\n"; \
 	echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"; \
 	echo ""; \
 	\
-	printf "$(BOLD)[1/6] Secret scanning (gitleaks)$(RESET)\n"; \
+	printf "$(BOLD)[1/5] Secret scanning (gitleaks)$(RESET)\n"; \
 	if command -v gitleaks >/dev/null 2>&1; then \
 		if gitleaks detect --verbose --redact 2>&1; then \
 			printf "  $(GREEN)✓ No secrets detected$(RESET)\n"; \
@@ -358,7 +358,7 @@ ci: ## Run all local checks (secrets, fmt, theme-lint, flake, doctor, compat)
 	fi; \
 	echo ""; \
 	\
-	printf "$(BOLD)[2/6] Nix formatting$(RESET)\n"; \
+	printf "$(BOLD)[2/5] Nix formatting$(RESET)\n"; \
 	if nix fmt -- --check . 2>/dev/null; then \
 		printf "  $(GREEN)✓ All files formatted$(RESET)\n"; \
 	else \
@@ -367,16 +367,7 @@ ci: ## Run all local checks (secrets, fmt, theme-lint, flake, doctor, compat)
 	fi; \
 	echo ""; \
 	\
-	printf "$(BOLD)[3/6] Theme lint$(RESET)\n"; \
-	if bash scripts/check-theme-lint.sh 2>&1; then \
-		printf "  $(GREEN)✓ Theme integrity OK$(RESET)\n"; \
-	else \
-		printf "  $(YELLOW)⚠ Theme lint failed$(RESET)\n"; \
-		ERRORS=$$((ERRORS+1)); \
-	fi; \
-	echo ""; \
-	\
-	printf "$(BOLD)[4/6] Nix flake check$(RESET)\n"; \
+	printf "$(BOLD)[3/5] Nix flake check$(RESET)\n"; \
 	if nix flake check 2>&1; then \
 		printf "  $(GREEN)✓ Flake check passed$(RESET)\n"; \
 	else \
@@ -385,11 +376,11 @@ ci: ## Run all local checks (secrets, fmt, theme-lint, flake, doctor, compat)
 	fi; \
 	echo ""; \
 	\
-	printf "$(BOLD)[5/6] Environment health$(RESET)\n"; \
+	printf "$(BOLD)[4/5] Environment health$(RESET)\n"; \
 	$(MAKE) --no-print-directory doctor; \
 	echo ""; \
 	\
-	printf "$(BOLD)[6/6] Cross-platform host eval$(RESET)\n"; \
+	printf "$(BOLD)[5/5] Cross-platform host eval$(RESET)\n"; \
 	if $(MAKE) --no-print-directory compat; then \
 		printf "  $(GREEN)✓ Host compatibility checks passed$(RESET)\n"; \
 	else \
@@ -905,7 +896,7 @@ promote: ## Promote a module: make promote MODULE=<name> FROM=<tier> TO=<tier> [
 	echo ""; \
 	printf "$(BOLD)Next steps:$(RESET)\n"; \
 	echo "  1. Update import paths in the feature file (home/03-features/$$CAT_RESOLVED.nix)"; \
-	echo "  2. If the module imports _shared/theme, verify the relative path is still correct"; \
+	echo "  2. If the module imports _shared/fonts, verify the relative path is still correct"; \
 	echo "  3. Run: make switch"
 
 # ── Alias Management ──────────────────────────────────────────────────────

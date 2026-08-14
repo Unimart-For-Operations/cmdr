@@ -4,7 +4,7 @@
 -- sits on the runtimepath (stdpath("data")/site) without touching the read-only
 -- ~/.config/nvim-astro/ symlinks.
 --
--- Semantic roles align with _shared/theme Catppuccin palette:
+-- Semantic roles follow the catppuccin-style naming yatline/nvim expect:
 --   text  -> colors.on_surface
 --   surface0/base -> colors.surface_container / colors.background
 --   mauve -> colors.primary

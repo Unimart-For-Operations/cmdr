@@ -33,7 +33,7 @@ Modules are organized into adoption tiers within each category:
 
 ```
 home/04-modules/
-├── _shared/theme/        # Global Catppuccin Frappe palette
+├── _shared/fonts/        # Shared font config (terminal metrics)
 ├── cli/
 │   ├── graduated/        # Stable, daily-use (20 modules)
 │   ├── incubating/       # Under evaluation

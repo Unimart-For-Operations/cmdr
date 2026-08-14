@@ -9,14 +9,14 @@
 # ~/.local/bin is on PATH before the Nix profile, so the wrappers shadow the
 # plain neovim binary from Nix. To switch distros, change what nvim points to.
 # No shell aliases needed — wrappers work in scripts, tmux, cron, everywhere.
-{ inputs, pkgs, hostMeta ? { }, ... }:
+{ inputs, pkgs, ... }:
 
 let
   # Build nixvim configuration
   # This creates a standalone nvim executable with all plugins and config baked in
   nixvimConfig = inputs.nixvim.legacyPackages.${pkgs.stdenv.hostPlatform.system}.makeNixvimWithModule {
     inherit pkgs;
-    module = import ./nixvim-config.nix { inherit hostMeta; };
+    module = import ./nixvim-config.nix { };
   };
 
   # Wrap the nixvim binary under the name 'nixvim' so it doesn't conflict with

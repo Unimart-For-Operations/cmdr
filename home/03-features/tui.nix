@@ -19,9 +19,8 @@
     ../04-modules/tui/graduated/nvim
     ../04-modules/tui/graduated/lazygit
     ../04-modules/tui/graduated/yazi
-
+    ../04-modules/tui/graduated/k9s
     # ── Incubating ───────────────────────────────────────────────────────
     ../04-modules/tui/incubating/sesh
-    ../04-modules/tui/incubating/k9s
   ];
 }

@@ -1,7 +1,7 @@
 # DMS matugen k9s skin — auto-generated, do not edit.
 # Colors from the active DMS wallpaper theme. Written by the dms/matugen module
 # to ~/.config/k9s/skins/dank.yaml and selected via settings.k9s.ui.skin on DMS
-# hosts (see tui/incubating/k9s). Keeps the same semantic roles as _shared/theme:
+# hosts (see tui/incubating/k9s). Uses catppuccin-style semantic roles:
 #   text       -> colors.on_surface
 #   base       -> colors.background
 #   mantle     -> colors.surface_container_lowest

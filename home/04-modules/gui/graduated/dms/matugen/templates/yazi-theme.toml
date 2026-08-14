@@ -1,7 +1,7 @@
 # DMS matugen yazi theme — auto-generated, do not edit.
 # Colors from the active DMS wallpaper theme. Written by the dms/matugen module
 # to ~/.config/yazi/theme.toml on DMS hosts (HM skips it there; see
-# tui/graduated/yazi). Keeps the same semantic roles as _shared/theme:
+# tui/graduated/yazi). Uses catppuccin-style semantic roles:
 #   text       -> colors.on_surface
 #   base       -> colors.background
 #   mantle     -> colors.surface_container_lowest

@@ -100,7 +100,7 @@ home/04-modules/tui/incubating/  →  TUI tools (maturing)
 home/04-modules/gui/graduated/   →  GUI tools (stable)
 home/04-modules/gui/incubating/  →  GUI tools (maturing)
 home/04-modules/gui/sandbox/     →  GUI tools (experimental, opt-in)
-home/04-modules/_shared/theme/   →  Shared theme system (Catppuccin Frappe)
+home/04-modules/_shared/fonts/   →  Shared font config (terminal metrics)
 ```
 
 ### Tier System (CNCF-style)
@@ -159,8 +159,7 @@ make tiers                 # View module adoption tiers
 - **Hosts**: 4 active (2 macOS, 2 Arch Linux)
 - **Platforms**: 2 (macOS, Linux)
 - **Features**: 3 core (cli, tui, gui) + base
--- **Theme**: Catppuccin Frappe (now documented in `docs/Reference/theme.md`)
-- **Neovim Distributions**: 2 (AstroNvim, Nixvim)
+-- **Neovim Distributions**: 2 (AstroNvim, Nixvim)
 
 ---
 

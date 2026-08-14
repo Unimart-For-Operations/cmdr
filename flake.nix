@@ -204,16 +204,6 @@
             echo "format: OK" > $out
           '';
 
-          # Theme integrity — no direct palette imports or raw hex literals.
-          theme-lint = pkgs.runCommand "cmdr-theme-lint"
-            {
-              src = self;
-              nativeBuildInputs = [ pkgs.bash ];
-            } ''
-            bash "$src/scripts/check-theme-lint.sh"
-            echo "theme-lint: OK" > $out
-          '';
-
           # Forcing evaluation of a host config is a real check: it catches
           # syntax errors, bad module options, and broken feature flags across
           # every host (including darwin, evaluated from Linux).
@@ -246,7 +236,6 @@
         in
         {
           inherit format;
-          "theme-lint" = theme-lint;
         }
         // evalHome
         // evalDarwin
@@ -289,7 +278,7 @@
               echo ""
               echo "Available commands:"
               echo "  make help        - Show all available commands"
-              echo "  make ci          - Run static checks (gitleaks, fmt, theme-lint, flake, doctor)"
+              echo "  make ci          - Run static checks (gitleaks, fmt, flake, doctor)"
               echo "  make ci-full     - Run ci plus the automated container test"
               echo "  make test        - Spin up Linux test container"
               echo "  make test-run    - Automated container provision + verify + teardown"

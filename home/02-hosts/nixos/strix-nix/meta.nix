@@ -9,5 +9,4 @@
   capabilities = [ "baseline" "terminal-dev" "operator" "idp-local" "desktop" "gaming" ];
   features = [ "cli" "tui" "gui" "gaming" ];
   desktop = [ "hyprland" "dms" ];
-  theme = "catppuccin-mocha";
 }

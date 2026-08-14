@@ -1,7 +1,7 @@
 -- DMS matugen yatline palette — auto-generated, do not edit.
 -- Colors from the active DMS wallpaper theme. Written by the dms/matugen module
 -- to ~/.config/yazi/dank-palette.lua and loaded by the yazi module on DMS hosts
--- (via dofile). Keeps the same semantic roles as yatline-catppuccin:
+-- (via dofile). Palette keys follow yatline's catppuccin-style semantic roles:
 --   mauve      -> colors.primary
 --   lavender   -> colors.primary_fixed_dim
 --   blue       -> dank16.color4

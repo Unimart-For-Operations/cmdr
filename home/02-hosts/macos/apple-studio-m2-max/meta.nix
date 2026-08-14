@@ -8,5 +8,4 @@
   role = "platform-operator";
   capabilities = [ "baseline" "terminal-dev" "operator" "idp-local" "desktop" ];
   features = [ "cli" "tui" "gui" ];
-  theme = "catppuccin-frappe";
 }

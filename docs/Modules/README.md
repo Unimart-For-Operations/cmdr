@@ -18,7 +18,7 @@ Documentation for each module category, mirroring the `home/04-modules/` structu
 
 ```
 home/04-modules/
-├── _shared/theme/ # Global Catppuccin Frappe palette, fonts, semantic colors
+├── _shared/fonts/ # Shared font config (terminal metrics)
 ├── cli/
 │   ├── graduated/ # Stable CLI tools (core-utils, git, zsh, starship, atuin, ...)
 │   ├── incubating/
