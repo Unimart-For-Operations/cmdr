@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Contributing Guide
 
 This document provides comprehensive context for contributing to the cmdr codebase, including project architecture, development workflows, and code style guidelines.

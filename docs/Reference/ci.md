@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # CI Strategy
 
 Local-first continuous integration. No remote CI services — all checks run on your machine.

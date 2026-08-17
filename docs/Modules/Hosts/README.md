@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Hosts
 
 This directory is the source of truth for physical machines.

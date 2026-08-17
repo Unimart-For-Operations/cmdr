@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Roadmap
 
 **Current status of cmdr's structural evolution and future plans.**

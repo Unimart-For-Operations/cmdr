@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Modules
 
 Documentation for each module category, mirroring the `home/04-modules/` structure.

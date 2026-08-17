@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-07-29
----
 # AstroNvim Stabilization Phase (Neovim 0.12)
 
 ## Context

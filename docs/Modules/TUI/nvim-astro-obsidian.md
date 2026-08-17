@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Obsidian.nvim Integration for AstroNvim
 
 ## Overview

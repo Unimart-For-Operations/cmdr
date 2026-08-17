@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Getting Started
 
 New to cmdr? Start here to get up and running.

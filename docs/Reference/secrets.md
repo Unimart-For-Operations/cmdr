@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Secret Management with sops-nix
 
 This repository uses [sops-nix](https://github.com/Mic92/sops-nix) for secure secret management. Secrets are encrypted using age keys and never committed in plaintext.

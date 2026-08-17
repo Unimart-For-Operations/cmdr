@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Dev Control Plane Documentation
 
 **Complete documentation for a declarative, modular, cross-platform development environment.**

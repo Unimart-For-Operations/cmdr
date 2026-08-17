@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Tier Migration v1 -- Original Plan (Historical Reference)
 
 **Date:** 2026-03-22

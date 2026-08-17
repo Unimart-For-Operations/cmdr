@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # CNOE IDP Builder -- Codebase Analysis
 
 **Analyzed:** 2026-03-22

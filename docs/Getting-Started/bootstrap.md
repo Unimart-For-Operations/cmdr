@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Bootstrap Guide: New Machine Setup
 
 This guide walks through setting up a brand new machine using this repository, from a clean OS installation to a fully configured development environment.

@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Architecture
 
 Understanding the design, philosophy, and implementation of cmdr.

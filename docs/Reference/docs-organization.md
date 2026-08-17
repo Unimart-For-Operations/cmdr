@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Documentation Organization
 
 How documentation is organized across the idpbuilder org and synced with Obsidian.

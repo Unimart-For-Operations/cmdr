@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Container Testing Environment
 
 This directory contains Docker Compose configuration for testing the Dev Control Plane in an isolated Ubuntu Linux environment.

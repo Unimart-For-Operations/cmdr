@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Nix Platform Support
 
 A comprehensive overview of what platforms Nix supports and how this project leverages them.

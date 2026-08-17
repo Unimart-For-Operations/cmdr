@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Fonts
 
 **Single source of truth for terminal font metrics.**

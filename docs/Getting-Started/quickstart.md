@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # Dev Control Plane - Quick Start
 
 ## What This Repository Does

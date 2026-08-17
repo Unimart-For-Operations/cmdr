@@ -1,7 +1,3 @@
----
-source: idpbuilder-org
-synced: 2026-03-30
----
 # AstroNvim Configuration
 
 The primary Neovim distribution in cmdr, built on [AstroNvim](https://github.com/AstroNvim/AstroNvim) v5+.
