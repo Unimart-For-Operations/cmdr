@@ -45,9 +45,14 @@
   networking.networkmanager.enable = true;
 
   # Local IDP endpoints (idpbuilder runs on this host). The default
-  # resolver can't reach *.localtest.me, so pin the dev hosts to loopback.
-  networking.extraHosts = ''
-    127.0.0.1 cnoe.localtest.me gitea.cnoe.localtest.me argocd.cnoe.localtest.me backstage.cnoe.localtest.me docs.cnoe.localtest.me
+  # resolver can't reach *.localtest.me, so route every *.cnoe.localtest.me
+  # host to loopback via NetworkManager's dnsmasq plugin. The wildcard
+  # covers current endpoints and future scaffolded sandboxes alike
+  # (e.g. <name>-terminal.cnoe.localtest.me) without per-host /etc/hosts
+  # entries.
+  networking.networkmanager.dns = "dnsmasq";
+  environment.etc."NetworkManager/dnsmasq.d/idp-localtest.conf".text = ''
+    address=/cnoe.localtest.me/127.0.0.1
   '';
 
   # ── Bluetooth (Intel AX211) ─────────────────────────────────────
