@@ -5,7 +5,7 @@
 #     in { font-family = f.mono.family; }
 #
 # Exposes:
-#   f.mono.family         — "FiraCode Nerd Font Mono"
+#   f.mono.family         — "AtkynsonMono Nerd Font Mono"
 #   f.mono.size           — 13 (GUI terminal default)
 #   f.mono.lineHeight     — 1.18 multiplier
 #   f.mono.cellHeightPercent — 14 (Ghostty uses a percent)
@@ -16,7 +16,7 @@
 {
   # Font stack
   mono = {
-    family = "FiraCode Nerd Font Mono";
+    family = "AtkynsonMono Nerd Font Mono";
     size = 13; # GUI terminal default
     # Line height multiplier (1.0 = default). Slightly increased to
     # reduce visual clipping and improve vertical rhythm across terminals.
@@ -32,7 +32,7 @@
     # Mirror the generic mono values to reduce layout drift between
     # Kitty and other terminals. Consumers may override selectively if
     # a platform requires a different metric.
-    family = "FiraCode Nerd Font Mono";
+    family = "AtkynsonMono Nerd Font Mono";
     size = 13;
     lineHeight = 1.18;
     cellHeightPercent = 14;
