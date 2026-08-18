@@ -694,6 +694,7 @@ in
         editor = "nvim";
         hooksPath = hooksDir;
       };
+      credential.helper = "store";
       init.defaultBranch = "main";
       pull.rebase = true;
       url."git@github.com:".insteadOf = "https://github.com/";
