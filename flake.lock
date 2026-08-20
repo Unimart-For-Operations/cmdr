@@ -123,11 +123,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787191528,
-        "narHash": "sha256-Hhvf4h7tIPhvkQItsHTs7P92rnH1NbKdwo/QvtmjNiM=",
+        "lastModified": 1787240424,
+        "narHash": "sha256-daLRRoypQD5nNUabj5a35l9h0NMo1bO0T3n6umTQYcI=",
         "ref": "refs/heads/main",
-        "rev": "c5bca3d5b6aacd1e4be215bacbbdfc45d232541b",
-        "revCount": 87,
+        "rev": "c6a8ff5d91bb7267c98d24723dca4827cf71a191",
+        "revCount": 90,
         "type": "git",
         "url": "ssh://git@github.com/Unimart-For-Operations/meta.git"
       },
