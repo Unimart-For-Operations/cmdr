@@ -1,15 +1,14 @@
 # home/03-features/tty.nix -- Minimal TTY Feature
 #
 # Lean terminal-only baseline for headless boxes, VMs, and remote shells.
-# Keeps only essential CLI + terminal workflow modules and skips cloud/lang
-# stacks and GUI dependencies.
+# Includes only cli-core (shell, git, SSH, core utils) and essential TUI apps.
 #
 #   features = [ "tty" ];
 { ... }:
 
 {
   imports = [
-    # -- CLI essentials ------------------------------------------------------
+    # -- CLI essentials (uses cli-core sub-feature directly) -----------
     ../04-modules/cli/graduated/core-utils
     ../04-modules/cli/graduated/git
     ../04-modules/cli/graduated/ssh
@@ -20,7 +19,7 @@
     ../04-modules/cli/graduated/bat
     ../04-modules/cli/graduated/eza
 
-    # -- TTY apps ------------------------------------------------------------
+    # -- TTY apps (editor, multiplexer, file manager) -----------------
     ../04-modules/tui/graduated/tmux
     ../04-modules/tui/graduated/nvim
     ../04-modules/tui/graduated/yazi
