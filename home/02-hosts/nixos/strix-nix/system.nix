@@ -1,5 +1,17 @@
 { config, pkgs, lib, hostMeta, ... }:
 
+let
+  # "LOGIN" banner rendered by figlet at build time, fed to tuigreet's
+  # --greeting flag.
+  loginBanner = builtins.readFile (
+    pkgs.runCommand "login-banner" { nativeBuildInputs = [ pkgs.figlet ]; } ''
+      figlet -f standard LOGIN > $out
+    ''
+  );
+
+  # Monochrome green greeter: every UI component renders green-on-black.
+  greenTheme = "text=green;time=green;border=green;title=green;greet=green;prompt=green;input=green;action=green;button=green";
+in
 {
   # ── Boot ──────────────────────────────────────────────────────
   boot.loader.systemd-boot.enable = true;
@@ -36,7 +48,7 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd '${pkgs.uwsm}/bin/uwsm start hyprland.desktop'";
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --greeting \"${loginBanner}\" --theme '${greenTheme}' --cmd '${pkgs.uwsm}/bin/uwsm start hyprland.desktop'";
         user = "greeter";
       };
     };
