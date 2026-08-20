@@ -107,7 +107,7 @@ in
       setw -g window-status-current-format ' #I:#W#F '
       
       # Pane border colors
-      set -g pane-border-lines single
+      set -g pane-border-lines heavy
       set -g pane-border-indicators off
       set -g pane-border-status off
       # Keep borders static (no active-pane highlighting)

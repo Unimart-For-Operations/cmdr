@@ -49,7 +49,7 @@ in
       cursor_stop_blinking_after = "0";
 
       # ── Window ────────────────────────────────────────────────────────────
-      window_padding_width = "8";
+      window_padding_width = "0";
       placement_strategy = "center";
       hide_window_decorations = "titlebar-only";
       remember_window_size = "no";

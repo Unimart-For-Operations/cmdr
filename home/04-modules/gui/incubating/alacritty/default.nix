@@ -67,8 +67,8 @@ in
       # ── Window ─────────────────────────────────────────────────────────────
       window = {
         padding = {
-          x = 12;
-          y = 12;
+          x = 0;
+          y = 0;
         };
         decorations = "full";
         startup_mode = "Maximized";

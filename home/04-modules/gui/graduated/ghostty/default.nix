@@ -53,8 +53,8 @@ in
     ${if isDms then "theme = dankcolors" else ""}
 
     # Window padding
-    window-padding-x = 12
-    window-padding-y = 12
+    window-padding-x = 0
+    window-padding-y = 0
     window-theme = ghostty
     window-colorspace = srgb
     maximize = true
