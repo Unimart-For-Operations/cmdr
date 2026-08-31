@@ -346,7 +346,7 @@
         source "''${XDG_CONFIG_HOME:-$HOME/.config}/tmux/layouts/_tmux-helpers.sh"
 
         SESSION_NAME="idpbuilder"
-        ORG_ROOT="$HOME/repos/github/idpbuilder"
+        ORG_ROOT="$HOME/repos/Unimart-For-Operations/meta"
         OBSIDIAN_DOCS="$HOME/Documents/cmdr/Professional/organizations/idpbuilder/cmdr"
 
         # Repo directories

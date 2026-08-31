@@ -1,17 +1,5 @@
 { config, pkgs, lib, hostMeta, ... }:
 
-let
-  # "LOGIN" banner rendered by figlet at build time, fed to tuigreet's
-  # --greeting flag.
-  loginBanner = builtins.readFile (
-    pkgs.runCommand "login-banner" { nativeBuildInputs = [ pkgs.figlet ]; } ''
-      figlet -f standard LOGIN > $out
-    ''
-  );
-
-  # Monochrome green greeter: every UI component renders green-on-black.
-  greenTheme = "text=green;time=green;border=green;title=green;greet=green;prompt=green;input=green;action=green;button=green";
-in
 {
   # ── Boot ──────────────────────────────────────────────────────
   boot.loader.systemd-boot.enable = true;
@@ -38,21 +26,28 @@ in
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
+    # The DMS greeter launches the session via uwsm. Nixpkgs' uwsm ships
+    # static systemd user units that are only put on the unit search path by
+    # programs.uwsm (via withUWSM); without it, uwsm fails with
+    # "wayland-session-bindpid@.service ... exit status 5" and login bounces
+    # back to the greeter.
+    withUWSM = true;
   };
 
-  # UWSM (Universal Wayland Session Manager) for systemd integration
-  environment.systemPackages = with pkgs; [ uwsm ];
-
-  # ── greetd Display Manager (TUI login) ────────────────────────
-  services.greetd = {
+  # ── greetd Display Manager (DMS greeter) ──────────────────────
+  services.displayManager.dms-greeter = {
     enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --greeting \"${loginBanner}\" --theme '${greenTheme}' --cmd '${pkgs.uwsm}/bin/uwsm start hyprland.desktop'";
-        user = "greeter";
-      };
-    };
+    compositor.name = "hyprland";
+
+    # Seed the greeter with the primary user's DMS settings, wallpaper state,
+    # and generated colors so the login screen matches the live desktop.
+    configHome = hostMeta.homeDirectory;
   };
+
+  # This host does not intentionally use passwordless local accounts, so do
+  # not permit null-password authentication at the greeter.
+  security.pam.services.greetd.allowNullPassword = lib.mkForce false;
+
   networking.hostName = "strix-nix";
   networking.networkmanager.enable = true;
 
